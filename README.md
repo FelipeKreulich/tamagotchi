@@ -1,85 +1,70 @@
-# Tamagochi — Retro Pet
+# 🥚 Tamagochi — Retro Pet
 
-Jogo estilo **Tamagotchi** com estética retrô autêntica dos anos 90, feito para
-a web. 100% client-side, persistência em `localStorage` — sem backend.
+![Tamagochi Retro Pet — gameplay](./public/screenshots/projeto-tamagochi.png)
 
-## Stack
+**Lembra daquele bichinho virtual preso no chaveiro dos anos 90 que vivia
+pedindo comida no meio da aula?** A gente trouxe ele de volta — com toda a
+alma LCD verde-fosforescente, bipes 8-bit e a ansiedade gostosa de não saber
+se o seu mascote vai passar da adolescência.
 
-- **Next.js 16** (App Router) + **React 19** + **TypeScript**
-- **TailwindCSS v4** (dark-only, paleta LCD custom)
-- **shadcn/ui** (base-nova, tema neutral)
-- Fonte pixelada **Press Start 2P** via `next/font`
-- **Vitest** + **Testing Library** (jsdom) para testes
-- **Husky** + **lint-staged** no pre-commit
-- **Web Audio API** para os beeps 8-bit (Fase 2)
+Cuide do ovo, veja ele chocar, escolha entre três espécies, brinque, alimente,
+dê banho, remédio, limpe a bagunça, coloque pra dormir — e torça pra que
+ele não morra de fome enquanto você "só deu uma olhadinha no celular".
 
-## Como rodar
+É o jogo perfeito pra encaixar naquela hora morta do dia:
+
+- 🚇 Fila do mercado, ponto de ônibus, elevador preso
+- ☕ Cinco minutos entre reuniões
+- 🎓 Aquela aula que ninguém presta atenção
+- 🛌 Antes de dormir, quando o sono não vem
+- 🕒 Qualquer pausa de 30 segundos que você quer matar com dignidade
+
+## 🎮 Pra começar a jogar
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000
-npm run build    # build de produção
-npm test         # roda testes unitários
-npm run test:watch
+npm run dev
 ```
 
-O hook de pre-commit roda `lint-staged` + `vitest run` automaticamente.
+Abra no navegador, dê um nome bonito (ou ridículo, a gente não julga), escolha
+sua espécie favorita — **BLOB** (o clássico amorfo verde), **DINO** (o ciano
+saudoso) ou **CAT** (o rosa fofo) — e não esqueça de aceitar o som **assim que
+a música tocar**. Pixel art sem chiptune é só metade da experiência.
 
-## Estrutura
+## ✨ O que tem dentro
 
-```
-src/
-  app/                 # rotas Next (App Router)
-  components/
-    tamagotchi/        # componentes visuais do jogo
-    ui/                # shadcn/ui
-  lib/
-    game/              # lógica pura: tipos, stats, decay, life-cycle
-    audio/             # helpers Web Audio (beeps 8-bit)
-    storage/           # wrappers de localStorage com versionamento
-  hooks/               # useTamagotchi, useGameLoop, useAudio...
-  types/               # tipos globais
-```
+- **Ciclo de vida completo**: ovo → bebê → criança → adolescente → adulto → ancião
+- **Cinco stats que não te deixam em paz**: fome, felicidade, energia, higiene, saúde
+- **Ele continua passando fome mesmo com a aba fechada** (tipo bichinho de verdade)
+- **Mini-game da adivinhação** pra levantar o humor quando ele emburra
+- **Cemitério** com o histórico de cada alma que se foi (e a causa, pra você
+  se culpar direitinho)
+- **Conquistas** pra quem é dessas de platinar tudo
+- **Notificações do navegador** quando ele está em perigo (opcional, prometemos
+  não encher o saco)
+- **Música de abertura arcade** em loop na tela inicial
+- **Três idiomas**: Português 🇧🇷, Português 🇵🇹 e Inglês 🇺🇸
+- **Funciona offline depois da primeira carga**, porque tudo vive no próprio
+  navegador
 
-## Paleta retrô (CSS variables)
+## 💾 Os dados ficam com você
 
-| Token           | Uso                                  |
-| --------------- | ------------------------------------ |
-| `--lcd-dark`    | fundo principal (quase preto)        |
-| `--lcd-bg`      | fundo LCD verde-escuro               |
-| `--lcd-dim`     | tom médio (divisores, sombras)       |
-| `--lcd-light`   | verde fosforescente (texto/sprites)  |
-| `--accent-pink` | destaques (títulos, conquistas)      |
-| `--accent-cyan` | ações, barras especiais              |
+Não tem login, cadastro, servidor, cookie maluco. Tudo fica salvo no seu
+navegador — se você limpar o histórico, seu bichinho vai pro além. Sinta-se
+livre pra abrir, fechar e voltar dias depois; ele vai estar lá (provavelmente
+um pouco faminto).
 
-Classes Tailwind correspondentes: `bg-lcd-dark`, `text-lcd-light`,
-`bg-accent-pink`, etc.
+## 🕹️ Dicas rápidas
 
-## Roadmap
+- **Doce engorda a felicidade mas pode dar dor de barriga** — use com moderação
+- **Sono cura quase tudo** — se ele tá de mau humor, coloca ele pra dormir
+- **Cocô acumulado mata a higiene rápido** — passa o botão de limpar
+- **Remédio só funciona quando ele tá doente** — não desperdice
 
-### Fase 1 — Setup (concluída)
-- Boilerplate Next.js + Tailwind v4 + shadcn/ui
-- Paleta LCD + fonte pixelada
-- Dark mode forçado
-- Folder structure + tipos base
-- Husky + Vitest configurados
+## ❤️ Feito com carinho
 
-### Fase 2 — Desenvolvimento
-- [ ] Stats (fome, felicidade, energia, higiene, saúde) + decay temporal
-- [ ] Game loop (`setInterval` + delta de tempo persistido)
-- [ ] Estados visuais (feliz, triste, doente, dormindo, com fome, sujo, morto)
-- [ ] Ciclo de vida (ovo → bebê → criança → adolescente → adulto → ancião)
-- [ ] Morte permanente com causas
-- [ ] Ações: alimentar (comida vs doce), brincar (minigame), dormir, banho,
-      remédio, limpar
-- [ ] Áudio 8-bit (Web Audio API) + toggle de mute persistente
-- [ ] Tela inicial: nomear + escolher espécie (3 sprites)
-- [ ] Notificações do navegador em stats críticos
-- [ ] Cemitério + conquistas
-- [ ] HUD segmentado + relógio/idade
-- [ ] Reset com confirmação
-- [ ] "Case" do Tamagotchi em CSS com botões A/B/C
+Projeto pessoal feito pra matar saudade do que era simples e viciante.
+Contribua, forqueie, suba o seu próprio bichinho — ou só jogue mesmo e
+mande foto do recorde de idade no cemitério.
 
-## Licença
-
-Uso pessoal / estudos.
+Boa sorte, cuidador. Seu bichinho tá te esperando. 🥚✨
