@@ -43,6 +43,7 @@ import { FullscreenToggle } from "./FullscreenToggle";
 import { LcdScreen } from "./LcdScreen";
 import { DpadButtons } from "./DpadButtons";
 import { AchievementsDialog } from "./AchievementsDialog";
+import { ParticleBurst, type ParticleKind } from "./Particles";
 import { HelpButton } from "./HelpButton";
 import { HelpDialog } from "./HelpDialog";
 import { HistoryDialog } from "./HistoryDialog";
@@ -230,6 +231,14 @@ export function Game() {
   const [shopOpen, setShopOpen] = useState(false);
   const [patBouncing, setPatBouncing] = useState(false);
   const lastPatAtRef = useRef(0);
+  const [particle, setParticle] = useState<{
+    kind: ParticleKind;
+    key: number;
+  }>({ kind: "hearts", key: 0 });
+
+  const triggerParticle = (kind: ParticleKind) => {
+    setParticle({ kind, key: Date.now() });
+  };
 
   const handlePat = () => {
     if (!pet || !pet.isAlive || pet.isSleeping) return;
@@ -238,6 +247,7 @@ export function Game() {
     lastPatAtRef.current = now;
     actions.pat();
     toast(dict.toasts.patted);
+    triggerParticle("hearts");
     setPatBouncing(true);
     const t = window.setTimeout(() => setPatBouncing(false), 700);
     return () => window.clearTimeout(t);
@@ -274,6 +284,7 @@ export function Game() {
         onSelect: () => {
           actions.feedFood();
           toast(dict.toasts.fed);
+          triggerParticle("plus");
         },
         disabled: !pet.isAlive || pet.isSleeping,
       },
@@ -284,6 +295,7 @@ export function Game() {
         onSelect: () => {
           actions.feedCandy();
           toast(dict.toasts.candy);
+          triggerParticle("hearts");
         },
         disabled: !pet.isAlive || pet.isSleeping,
       },
@@ -305,9 +317,11 @@ export function Game() {
           if (pet.isSleeping) {
             actions.wake();
             toast(dict.toasts.goodMorning);
+            triggerParticle("stars");
           } else {
             actions.sleep();
             toast(dict.toasts.goodNight);
+            triggerParticle("notes");
           }
         },
         disabled: !pet.isAlive,
@@ -319,6 +333,7 @@ export function Game() {
         onSelect: () => {
           actions.bath();
           toast(dict.toasts.clean);
+          triggerParticle("bubbles");
         },
         disabled: !pet.isAlive || pet.isSleeping,
       },
@@ -332,6 +347,7 @@ export function Game() {
           } else {
             actions.medicine();
             toast(dict.toasts.cured);
+            triggerParticle("plus");
           }
         },
         disabled: !pet.isAlive,
@@ -346,6 +362,7 @@ export function Game() {
           } else {
             actions.cleanPoop();
             toast(dict.toasts.poopCleaned);
+            triggerParticle("sparkles");
           }
         },
         disabled: !pet.isAlive,
@@ -468,7 +485,8 @@ export function Game() {
 
         <section className="order-1 flex flex-col items-center justify-center gap-6 lg:order-2 lg:col-start-2">
           <LcdScreen className="max-w-2xl">
-            <div className="flex min-h-[260px] flex-col items-center justify-center gap-5 sm:min-h-[320px]">
+            <div className="relative flex min-h-[260px] flex-col items-center justify-center gap-5 sm:min-h-[320px]">
+              <ParticleBurst trigger={particle.key} kind={particle.kind} />
               {onStartScreen ? (
                 <StartScreen
                   onStart={(name, species) =>
@@ -560,13 +578,17 @@ export function Game() {
           coins={coins}
           onFinishGuess={(won) => {
             actions.playMinigame(won);
-            if (won) actions.addCoins(5);
+            if (won) {
+              actions.addCoins(5);
+              triggerParticle("stars");
+            }
             toast(won ? dict.toasts.minigameWon : dict.toasts.minigameLost);
           }}
           onFinishGeneric={(result) => {
             if (result.happiness > 0) actions.awardHappiness(result.happiness);
             if (result.coins > 0) actions.addCoins(result.coins);
             const earned = result.won || result.coins > 0;
+            if (earned) triggerParticle("stars");
             toast(
               earned ? dict.toasts.minigameWon : dict.toasts.minigameLost
             );
