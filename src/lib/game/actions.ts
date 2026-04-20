@@ -96,3 +96,11 @@ export function applyMinigameResult(
     counters,
   };
 }
+
+export function pat(pet: Pet): Pet {
+  if (!pet.isAlive || pet.isSleeping) return pet;
+  return {
+    ...pet,
+    stats: addStats(pet.stats, { happiness: 3 }),
+  };
+}

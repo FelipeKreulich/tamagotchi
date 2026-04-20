@@ -101,6 +101,14 @@
   --sidebar-ring: var(--lcd-light);
 }
 
+html[data-time-of-day="night"] {
+  /* Cooler, bluish LCD palette at night. */
+  --lcd-bg: #0a1422;
+  --lcd-dark: #06080e;
+  --lcd-dim: #1a2438;
+  --lcd-light: #6dd8ff;
+}
+
 .dark {
   --background: var(--lcd-dark);
   --foreground: var(--lcd-light);

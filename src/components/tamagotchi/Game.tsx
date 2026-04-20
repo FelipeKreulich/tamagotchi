@@ -50,6 +50,7 @@ import { LineChart } from "lucide-react";
 import { ACHIEVEMENTS } from "@/lib/game/achievements";
 import { hasEvolved } from "@/lib/game/lifecycle";
 import { useKeyboardControls } from "@/hooks/useKeyboardControls";
+import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import {
   LOCALES,
   tpl,
@@ -143,6 +144,7 @@ export function Game() {
   const { pet, hydrated, settings, actions, achievements, graveyard } = tama;
   const dict = useT();
   const { locale, setLocale } = useLocale();
+  const timeOfDay = useTimeOfDay();
 
   const onStartScreen = !pet;
   const showIntroMusic = !hydrated || onStartScreen || (pet && !pet.isAlive);
@@ -166,6 +168,20 @@ export function Game() {
   const [achievementsOpen, setAchievementsOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [patBouncing, setPatBouncing] = useState(false);
+  const lastPatAtRef = useRef(0);
+
+  const handlePat = () => {
+    if (!pet || !pet.isAlive || pet.isSleeping) return;
+    const now = Date.now();
+    if (now - lastPatAtRef.current < 5000) return;
+    lastPatAtRef.current = now;
+    actions.pat();
+    toast(dict.toasts.patted);
+    setPatBouncing(true);
+    const t = window.setTimeout(() => setPatBouncing(false), 700);
+    return () => window.clearTimeout(t);
+  };
   const [evolvedStage, setEvolvedStage] = useState<LifeStage | null>(null);
   const lastStageRef = useRef<LifeStage | null>(null);
 
@@ -354,6 +370,13 @@ export function Game() {
           <h1 className="text-[12px] tracking-[0.4em] text-lcd-light sm:text-sm">
             TAMA<span className="text-accent-pink">—</span>GOTCHI
           </h1>
+          <span
+            aria-hidden
+            className="hidden border-2 border-lcd-light/50 px-2 py-0.5 text-[8px] uppercase tracking-widest text-lcd-light/70 sm:inline"
+            title={timeOfDay}
+          >
+            {timeOfDay === "night" ? "☾" : "☀"}
+          </span>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <MuteToggle
@@ -405,7 +428,14 @@ export function Game() {
                           frameDurationMs={500}
                         />
                       ) : (
-                        <PetSprite pet={pet} pixelSize={16} />
+                        <PetSprite
+                          pet={pet}
+                          pixelSize={16}
+                          onClick={handlePat}
+                          bouncing={patBouncing}
+                          clickable
+                          disabled={pet.isSleeping}
+                        />
                       )}
                     </div>
                     <p className="text-center text-[9px] uppercase tracking-[0.3em] text-lcd-light/70">

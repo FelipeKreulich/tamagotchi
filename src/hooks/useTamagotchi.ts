@@ -8,6 +8,7 @@ import {
   feedCandy,
   feedFood,
   medicine as medicineAction,
+  pat as patAction,
   sleep as sleepAction,
   wake as wakeAction,
 } from "@/lib/game/actions";
@@ -25,6 +26,7 @@ import {
   beepAlert,
   beepError,
   beepSuccess,
+  chirpHappy,
   melodyAchievement,
   melodyDeath,
   melodyEvolution,
@@ -62,6 +64,7 @@ export interface TamagotchiApi {
     sleep: () => void;
     wake: () => void;
     playMinigame: (won: boolean) => void;
+    pat: () => void;
     reset: () => void;
     setMuted: (muted: boolean) => void;
     setNotificationsEnabled: (enabled: boolean) => void;
@@ -225,6 +228,8 @@ export function useTamagotchi(): TamagotchiApi {
           (muted) =>
             won ? beepSuccess({ muted }) : beepError({ muted })
         ),
+      pat: () =>
+        applyToPet(patAction, (muted) => chirpHappy({ muted })),
       reset: () => {
         setState((prev) => {
           const next: SaveState = { ...prev, pet: null };
