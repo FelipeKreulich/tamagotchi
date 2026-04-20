@@ -147,3 +147,19 @@
     image-rendering: pixelated;
   }
 }
+
+@keyframes lcdflicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.92; }
+}
+
+@keyframes pixelshake {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 0); }
+  75% { transform: translate(2px, 0); }
+}
+
+@keyframes pixelbounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
