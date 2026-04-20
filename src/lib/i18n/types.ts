@@ -72,6 +72,10 @@ export interface Dictionary {
     minigameLost: string;
     notifEnabled: string;
     notifDenied: string;
+    exported: string;
+    imported: string;
+    importInvalid: string;
+    patted: string;
   };
   start: {
     askName: string;
@@ -182,5 +186,10 @@ export interface Dictionary {
     close: string;
     helpAria: string;
     helpLabel: string;
+    dataTitle: string;
+    export: string;
+    exportDesc: string;
+    import: string;
+    importDesc: string;
   };
 }

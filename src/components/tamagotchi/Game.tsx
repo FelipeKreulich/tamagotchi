@@ -492,7 +492,12 @@ export function Game() {
         unlocked={achievements}
       />
 
-      <HelpDialog open={helpOpen} onOpenChange={setHelpOpen} />
+      <HelpDialog
+        open={helpOpen}
+        onOpenChange={setHelpOpen}
+        onExport={actions.exportSave}
+        onImport={actions.importSave}
+      />
 
       {evolvedStage && <EvolutionFlash stage={evolvedStage} />}
 

@@ -72,6 +72,10 @@ const dict: Dictionary = {
     minigameLost: "😢 Missed...",
     notifEnabled: "🔔 Notifications enabled",
     notifDenied: "Permission denied by the browser",
+    exported: "💾 Backup downloaded",
+    imported: "📥 Save imported!",
+    importInvalid: "Invalid file",
+    patted: "🥰 Nice pat!",
   },
   start: {
     askName: "WHAT WILL YOU NAME YOUR PET?",
@@ -239,6 +243,11 @@ const dict: Dictionary = {
     close: "CLOSE",
     helpAria: "Open help",
     helpLabel: "HELP",
+    dataTitle: "MY DATA",
+    export: "EXPORT SAVE",
+    exportDesc: "Download a backup of your pet as JSON.",
+    import: "IMPORT SAVE",
+    importDesc: "Load a backup or a save from another browser.",
   },
 };
 

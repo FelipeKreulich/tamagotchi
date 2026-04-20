@@ -39,6 +39,7 @@ import {
 import {
   INITIAL_SAVE_STATE,
   loadSave,
+  migrate,
   saveSave,
   type SaveState,
 } from "@/lib/storage";
@@ -64,6 +65,8 @@ export interface TamagotchiApi {
     reset: () => void;
     setMuted: (muted: boolean) => void;
     setNotificationsEnabled: (enabled: boolean) => void;
+    exportSave: () => string;
+    importSave: (raw: string) => { success: boolean; error?: string };
   };
 }
 
@@ -248,6 +251,31 @@ export function useTamagotchi(): TamagotchiApi {
           persist(next);
           return next;
         });
+      },
+      exportSave: () => {
+        let snapshot: SaveState = INITIAL_SAVE_STATE;
+        setState((prev) => {
+          snapshot = prev;
+          return prev;
+        });
+        return JSON.stringify(snapshot, null, 2);
+      },
+      importSave: (raw) => {
+        try {
+          const parsed: unknown = JSON.parse(raw);
+          const migrated = migrate(parsed);
+          if (migrated === INITIAL_SAVE_STATE) {
+            return { success: false, error: "unrecognized save format" };
+          }
+          setState(migrated);
+          persist(migrated);
+          return { success: true };
+        } catch (err) {
+          return {
+            success: false,
+            error: err instanceof Error ? err.message : "parse error",
+          };
+        }
       },
     };
   }, [applyToPet]);

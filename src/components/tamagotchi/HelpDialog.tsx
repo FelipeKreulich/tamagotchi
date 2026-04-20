@@ -1,5 +1,7 @@
 "use client";
 
+import { useRef } from "react";
+import { Download, Upload } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -8,10 +10,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useT } from "@/lib/i18n";
+import { toast } from "sonner";
 
 interface HelpDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onExport: () => string;
+  onImport: (raw: string) => { success: boolean; error?: string };
 }
 
 function Kbd({ children }: { children: React.ReactNode }) {
@@ -22,8 +27,53 @@ function Kbd({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
+export function HelpDialog({
+  open,
+  onOpenChange,
+  onExport,
+  onImport,
+}: HelpDialogProps) {
   const dict = useT();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleExport = () => {
+    const json = onExport();
+    try {
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+      a.download = `tamagotchi-save-${stamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast(dict.toasts.exported);
+    } catch {
+      toast.error(dict.toasts.importInvalid);
+    }
+  };
+
+  const handleImportClick = () => fileInputRef.current?.click();
+  const handleImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const result = onImport(text);
+      if (result.success) {
+        toast(dict.toasts.imported);
+        onOpenChange(false);
+      } else {
+        toast.error(dict.toasts.importInvalid);
+      }
+    } catch {
+      toast.error(dict.toasts.importInvalid);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="rounded-none border-4 border-lcd-light bg-lcd-dark font-pixel text-lcd-light sm:max-w-xl">
@@ -107,6 +157,47 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
               <li>{dict.help.statsInfo.hygiene}</li>
               <li>{dict.help.statsInfo.health}</li>
             </ul>
+          </section>
+
+          <section className="space-y-3 border-t-2 border-dashed border-lcd-light/30 pt-4">
+            <h3 className="text-[10px] uppercase tracking-widest text-accent-cyan">
+              {dict.help.dataTitle}
+            </h3>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={handleExport}
+                className="group flex flex-col gap-2 border-2 border-lcd-light bg-lcd-dark p-3 text-left transition-colors hover:border-accent-cyan"
+              >
+                <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest text-lcd-light group-hover:text-accent-cyan">
+                  <Download className="h-3 w-3" />
+                  {dict.help.export}
+                </div>
+                <p className="text-[8px] leading-relaxed text-lcd-light/70">
+                  {dict.help.exportDesc}
+                </p>
+              </button>
+              <button
+                type="button"
+                onClick={handleImportClick}
+                className="group flex flex-col gap-2 border-2 border-lcd-light bg-lcd-dark p-3 text-left transition-colors hover:border-accent-pink"
+              >
+                <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest text-lcd-light group-hover:text-accent-pink">
+                  <Upload className="h-3 w-3" />
+                  {dict.help.import}
+                </div>
+                <p className="text-[8px] leading-relaxed text-lcd-light/70">
+                  {dict.help.importDesc}
+                </p>
+              </button>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={handleImportFile}
+            />
           </section>
         </div>
 

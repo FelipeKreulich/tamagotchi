@@ -72,6 +72,10 @@ const dict: Dictionary = {
     minigameLost: "😢 Errou...",
     notifEnabled: "🔔 Notificações ativadas",
     notifDenied: "Permissão negada pelo navegador",
+    exported: "💾 Backup baixado",
+    imported: "📥 Save importado!",
+    importInvalid: "Arquivo inválido",
+    patted: "🥰 Que carinho!",
   },
   start: {
     askName: "COMO VAI SE CHAMAR SEU BICHINHO?",
@@ -239,6 +243,11 @@ const dict: Dictionary = {
     close: "FECHAR",
     helpAria: "Abrir ajuda",
     helpLabel: "AJUDA",
+    dataTitle: "MEUS DADOS",
+    export: "EXPORTAR SAVE",
+    exportDesc: "Baixe um backup do seu bichinho em JSON.",
+    import: "IMPORTAR SAVE",
+    importDesc: "Carregue um backup ou save de outro navegador.",
   },
 };
 
