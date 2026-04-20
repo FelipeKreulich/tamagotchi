@@ -115,8 +115,6 @@ export interface Dictionary {
     history: string;
     historySub: string;
     historyEmpty: string;
-    tipTitle: string;
-    tip: string;
   };
   hud: {
     pet: string;

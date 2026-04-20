@@ -115,8 +115,6 @@ const dict: Dictionary = {
     history: "HISTORY",
     historySub: "Latest stat samples.",
     historyEmpty: "Not enough data yet.",
-    tipTitle: "TIP",
-    tip: "Use A/◀ and C/▶ to navigate, B/OK to execute.",
   },
   hud: {
     pet: "PET",

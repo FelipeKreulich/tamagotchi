@@ -125,14 +125,6 @@ function StatusPanel({
           </div>
         </button>
       </div>
-      <div className="mt-auto border-t-2 border-dashed border-lcd-light/30 pt-3">
-        <p className="text-[7px] uppercase tracking-[0.25em] text-lcd-light/60">
-          {dict.status.tipTitle}
-        </p>
-        <p className="mt-1 text-[9px] leading-relaxed text-lcd-light/90">
-          {dict.status.tip}
-        </p>
-      </div>
     </div>
   );
 }
