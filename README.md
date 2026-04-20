@@ -33,26 +33,43 @@ a música tocar**. Pixel art sem chiptune é só metade da experiência.
 
 ## ✨ O que tem dentro
 
-- **Ciclo de vida completo**: ovo → bebê → criança → adolescente → adulto → ancião
-- **Cinco stats que não te deixam em paz**: fome, felicidade, energia, higiene, saúde
-- **Ele continua passando fome mesmo com a aba fechada** (tipo bichinho de verdade)
-- **Mini-game da adivinhação** pra levantar o humor quando ele emburra
-- **Cemitério** com o histórico de cada alma que se foi (e a causa, pra você
-  se culpar direitinho)
-- **Conquistas** pra quem é dessas de platinar tudo
-- **Notificações do navegador** quando ele está em perigo (opcional, prometemos
-  não encher o saco)
-- **Música de abertura arcade** em loop na tela inicial
-- **Três idiomas**: Português 🇧🇷, Português 🇵🇹 e Inglês 🇺🇸
-- **Funciona offline depois da primeira carga**, porque tudo vive no próprio
-  navegador
+### O bichinho
+- **Ciclo de vida completo**: ovo → bebê → criança → adolescente → adulto → ancião, até 24h de vida natural
+- **3 espécies** com sprites, paletas e sons próprios (BLOB / DINO / CAT)
+- **Evoluções ramificadas secretas**: cuide muito bem e ele vira **MEGA ★**; abandone e ele vira **DARK ☠**
+- **5 stats** (fome, felicidade, energia, higiene, saúde) que decaem mesmo com a aba fechada
+- **Cemitério** com histórico de cada bichinho que partiu — nome, idade, variante e causa da morte
 
-## 💾 Os dados ficam com você
+### Coisas pra fazer
+- **3 minigames** pra farmar moedas: adivinhe 1-3, sequência estilo Simon, e um de reflexo (aperte na hora certa)
+- **Loja de 9 cosméticos** (chapéus, óculos, fitas) que ficam no sprite do seu bicho — gastam moedas dos minigames
+- **18 conquistas** desbloqueáveis (alguns bem escondidos)
+- **Clique no bichinho pra fazer carinho** — ele pula feliz e ganha pontinhos de felicidade
+- **Flash de evolução**: a tela inteira pisca quando ele muda de fase
 
-Não tem login, cadastro, servidor, cookie maluco. Tudo fica salvo no seu
-navegador — se você limpar o histórico, seu bichinho vai pro além. Sinta-se
-livre pra abrir, fechar e voltar dias depois; ele vai estar lá (provavelmente
-um pouco faminto).
+### Bastidor que te deixa a vida mais fácil
+- **Modo Creche**: toggle + regras configuráveis pra cuidar do bicho sozinho enquanto você dorme ou sai
+- **Atalhos de teclado** pra não precisar mirar: setas, ENTER, 1-8, M (mudo), N (notif), L (idioma), ? (ajuda)
+- **Notificações do navegador** avisam quando stats ficam críticos (opt-in)
+- **Export/import do save** em JSON pra backup ou passar pra outro navegador
+- **Histórico de stats** em sparklines — dá pra ver se você tá cuidando direito ou se a saúde tá caindo
+- **Dia/noite automático**: a paleta LCD muda sozinha de acordo com o relógio real (verde no dia, azul à noite)
+- **Tela cheia** com um clique
+- **3 idiomas**: 🇧🇷 PT-BR, 🇵🇹 PT-PT e 🇺🇸 EN, troca ao vivo no header
+
+### Áudio que importa
+- **5 faixas de música** em loop embaralhado rodando durante a tela inicial e menus
+- **Bipes 8-bit** gerados na hora via Web Audio API (sem arquivos de sample)
+- **Sons ambiente** que variam pelo humor do bichinho — ele faz chirpinhos diferentes quando tá feliz, triste ou com sono
+- **Choro proativo**: quando os stats ficam críticos, ele começa a choramingar em loop sutil (não só um bip aleatório)
+- Mute persistido, pra você não ter que desligar toda vez
+
+## 💾 Onde ficam os dados
+
+Não tem login, cadastro, servidor, cookie. Tudo fica salvo **no seu próprio
+navegador** — se você limpar o histórico, seu bichinho vai pro além. Dá pra
+exportar o save como JSON pelo botão `?` e importar em outro navegador ou
+passar pra um amigo. Sem tracking, sem terceiros, sem analytics.
 
 ## 🕹️ Dicas rápidas
 
@@ -60,6 +77,8 @@ um pouco faminto).
 - **Sono cura quase tudo** — se ele tá de mau humor, coloca ele pra dormir
 - **Cocô acumulado mata a higiene rápido** — passa o botão de limpar
 - **Remédio só funciona quando ele tá doente** — não desperdice
+- **Cuide MUITO bem nos primeiros 40 minutos** — aí é quando a variante **Mega ★** pode rolar
+- **Deixou 30 minutos sem atenção?** Ativa o Modo Creche, configura os limiares e dorme tranquilo
 
 ## ❤️ Feito com carinho
 
