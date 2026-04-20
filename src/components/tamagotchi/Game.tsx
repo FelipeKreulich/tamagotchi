@@ -11,6 +11,7 @@ import {
   RotateCcw,
   Sparkles,
   Trash2,
+  Skull,
 } from "lucide-react";
 import {
   Dialog,
@@ -23,10 +24,8 @@ import {
 import { useTamagotchi } from "@/hooks/useTamagotchi";
 import { useIntroMusic } from "@/hooks/useIntroMusic";
 import { useCriticalNotifications } from "@/hooks/useCriticalNotifications";
-import { NotificationToggle } from "./NotificationToggle";
 import type { Species } from "@/lib/game/types";
 import { StartScreen } from "./StartScreen";
-import { TamagotchiCase } from "./TamagotchiCase";
 import { PetSprite } from "./PetSprite";
 import { HUD } from "./HUD";
 import { ActionMenu, type ActionItem } from "./ActionMenu";
@@ -36,7 +35,66 @@ import { MiniGame } from "./MiniGame";
 import { Sprite } from "./Sprite";
 import { eggFrames } from "./sprites/egg";
 import { SPECIES_META } from "./sprites";
+import { NotificationToggle } from "./NotificationToggle";
+import { LcdScreen } from "./LcdScreen";
+import { DpadButtons } from "./DpadButtons";
 import { toast } from "sonner";
+
+function StatusPanel({
+  achievementCount,
+  totalAchievements,
+  graveyardCount,
+  onOpenGraveyard,
+}: {
+  achievementCount: number;
+  totalAchievements: number;
+  graveyardCount: number;
+  onOpenGraveyard: () => void;
+}) {
+  return (
+    <div className="flex h-full flex-col gap-3 border-4 border-lcd-light bg-lcd-dark p-4 shadow-[6px_6px_0_0] shadow-lcd-dim">
+      <p className="text-[8px] uppercase tracking-[0.3em] text-lcd-light/60">
+        STATUS
+      </p>
+      <div className="space-y-3">
+        <div className="flex items-center justify-between border-2 border-lcd-light/40 bg-lcd-dim/40 p-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-accent-cyan" />
+            <span className="text-[9px] uppercase tracking-widest text-lcd-light">
+              CONQUISTAS
+            </span>
+          </div>
+          <span className="text-sm text-accent-cyan">
+            {achievementCount}/{totalAchievements}
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={onOpenGraveyard}
+          className="flex w-full items-center justify-between border-2 border-lcd-light/40 bg-lcd-dim/40 p-3 transition-colors hover:border-accent-pink"
+        >
+          <div className="flex items-center gap-2">
+            <Skull className="h-4 w-4 text-accent-pink" />
+            <span className="text-[9px] uppercase tracking-widest text-lcd-light">
+              CEMITERIO
+            </span>
+          </div>
+          <span className="text-sm text-accent-pink">{graveyardCount}</span>
+        </button>
+      </div>
+      <div className="mt-auto border-t-2 border-dashed border-lcd-light/30 pt-3">
+        <p className="text-[7px] uppercase tracking-[0.25em] text-lcd-light/60">
+          DICA
+        </p>
+        <p className="mt-1 text-[9px] leading-relaxed text-lcd-light/90">
+          Use A/◀ e C/▶ para navegar, B/OK para executar.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+const TOTAL_ACHIEVEMENTS = 8;
 
 export function Game() {
   const tama = useTamagotchi();
@@ -55,7 +113,6 @@ export function Game() {
 
   const actionItems = useMemo<ActionItem[]>(() => {
     if (!pet) return [];
-    const sleepDisabled = !pet.isAlive;
     return [
       {
         id: "food",
@@ -97,7 +154,7 @@ export function Game() {
             toast("💤 Boa noite...");
           }
         },
-        disabled: sleepDisabled,
+        disabled: !pet.isAlive,
       },
       {
         id: "bath",
@@ -163,77 +220,131 @@ export function Game() {
   if (!hydrated) {
     return (
       <div className="flex min-h-screen items-center justify-center text-[10px] uppercase tracking-widest text-lcd-light">
-        carregando...
+        <span className="animate-[lcdflicker_1s_steps(2)_infinite]">
+          CARREGANDO...
+        </span>
       </div>
     );
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
-      <div className="flex flex-wrap items-center justify-center gap-2">
-        <MuteToggle
-          muted={settings.muted}
-          onToggle={() => actions.setMuted(!settings.muted)}
-          label={settings.muted ? "MUTE" : "SOM"}
-        />
-        <NotificationToggle
-          enabled={settings.notificationsEnabled}
-          onChange={actions.setNotificationsEnabled}
-        />
-        {graveyard.length > 0 && (
-          <button
-            type="button"
-            onClick={() => setGraveyardOpen(true)}
-            className="inline-flex items-center gap-1 border-2 border-lcd-light bg-lcd-dark px-3 py-2 text-[9px] uppercase tracking-widest text-lcd-light hover:border-accent-pink hover:text-accent-pink"
-          >
-            <Sparkles className="h-3 w-3" /> CEMITERIO ({graveyard.length})
-          </button>
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-[radial-gradient(ellipse_at_top,#112317_0%,#050905_70%)]">
+      {/* Decorative side pixel columns */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 left-0 hidden w-6 bg-[repeating-linear-gradient(0deg,var(--lcd-light)_0,var(--lcd-light)_4px,transparent_4px,transparent_12px)] opacity-20 md:block"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 right-0 hidden w-6 bg-[repeating-linear-gradient(0deg,var(--lcd-light)_0,var(--lcd-light)_4px,transparent_4px,transparent_12px)] opacity-20 md:block"
+      />
+
+      {/* Top bar */}
+      <header className="relative z-10 flex flex-wrap items-center justify-between gap-3 border-b-4 border-lcd-light bg-lcd-dark/80 px-4 py-3 backdrop-blur sm:px-8">
+        <div className="flex items-center gap-3">
+          <span
+            aria-hidden
+            className="h-3 w-3 animate-[ledpulse_1.6s_steps(2)_infinite] bg-accent-pink"
+          />
+          <h1 className="text-[12px] tracking-[0.4em] text-lcd-light sm:text-sm">
+            TAMA<span className="text-accent-pink">—</span>GOCHI
+          </h1>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <MuteToggle
+            muted={settings.muted}
+            onToggle={() => actions.setMuted(!settings.muted)}
+            label={settings.muted ? "MUTE" : "SOM"}
+          />
+          <NotificationToggle
+            enabled={settings.notificationsEnabled}
+            onChange={actions.setNotificationsEnabled}
+          />
+        </div>
+      </header>
+
+      {/* Main content */}
+      <div className="relative z-10 flex flex-1 flex-col gap-6 p-4 sm:p-8 md:gap-8 lg:grid lg:grid-cols-[300px_1fr_300px] lg:items-stretch">
+        {/* Left panel (HUD) */}
+        {pet && (
+          <aside className="order-2 lg:order-1">
+            <HUD pet={pet} />
+          </aside>
+        )}
+
+        {/* Center: LCD Screen */}
+        <section className="order-1 flex flex-col items-center justify-center gap-6 lg:order-2">
+          <LcdScreen className="max-w-2xl">
+            <div className="flex min-h-[260px] flex-col items-center justify-center gap-5 sm:min-h-[320px]">
+              {onStartScreen ? (
+                <StartScreen
+                  onStart={(name, species) =>
+                    actions.start(name, species as Species)
+                  }
+                />
+              ) : pet && !pet.isAlive ? (
+                <DeathScreen pet={pet} onNew={actions.reset} />
+              ) : (
+                pet && (
+                  <>
+                    <div className="flex items-center justify-center">
+                      {pet.stage === "egg" ? (
+                        <Sprite
+                          frames={eggFrames}
+                          palette={SPECIES_META[pet.species].palette}
+                          pixelSize={14}
+                          frameDurationMs={500}
+                        />
+                      ) : (
+                        <PetSprite pet={pet} pixelSize={16} />
+                      )}
+                    </div>
+                    <p className="text-center text-[9px] uppercase tracking-[0.3em] text-lcd-light/70">
+                      {pet.mood === "happy" && "SE SENTINDO OTIMO"}
+                      {pet.mood === "sad" && "PARECE TRISTE..."}
+                      {pet.mood === "sick" && "ESTA DOENTE!"}
+                      {pet.mood === "sleeping" && "DORMINDO"}
+                      {pet.mood === "hungry" && "COM FOME!"}
+                      {pet.mood === "dirty" && "PRECISA DE BANHO"}
+                    </p>
+                  </>
+                )
+              )}
+            </div>
+          </LcdScreen>
+
+          {pet && pet.isAlive && (
+            <DpadButtons onA={handleA} onB={handleB} onC={handleC} />
+          )}
+        </section>
+
+        {/* Right panel */}
+        {pet && (
+          <aside className="order-3">
+            <StatusPanel
+              achievementCount={achievements.length}
+              totalAchievements={TOTAL_ACHIEVEMENTS}
+              graveyardCount={graveyard.length}
+              onOpenGraveyard={() => setGraveyardOpen(true)}
+            />
+          </aside>
         )}
       </div>
 
-      <TamagotchiCase
-        onA={handleA}
-        onB={handleB}
-        onC={handleC}
-        labelA="◀"
-        labelB="OK"
-        labelC="▶"
-      >
-        <div className="flex min-h-[260px] flex-col items-center justify-center gap-3">
-          {onStartScreen ? (
-            <StartScreen
-              onStart={(name, species) => actions.start(name, species as Species)}
+      {/* Bottom: action grid */}
+      {pet && pet.isAlive && (
+        <footer className="relative z-10 border-t-4 border-lcd-light bg-lcd-dark/80 p-4 sm:p-6">
+          <div className="mx-auto max-w-5xl space-y-3">
+            <p className="text-center text-[8px] uppercase tracking-[0.4em] text-lcd-light/60">
+              ACOES
+            </p>
+            <ActionMenu
+              items={actionItems}
+              selectedIndex={menuIndex}
+              columns={4}
             />
-          ) : pet && !pet.isAlive ? (
-            <DeathScreen pet={pet} onNew={actions.reset} />
-          ) : (
-            pet && (
-              <div className="flex w-full flex-col items-center gap-3">
-                <HUD pet={pet} />
-                <div className="flex min-h-[110px] items-center justify-center">
-                  {pet.stage === "egg" ? (
-                    <Sprite
-                      frames={eggFrames}
-                      palette={SPECIES_META[pet.species].palette}
-                      pixelSize={8}
-                      frameDurationMs={500}
-                    />
-                  ) : (
-                    <PetSprite pet={pet} pixelSize={8} />
-                  )}
-                </div>
-                <ActionMenu items={actionItems} selectedIndex={menuIndex} />
-              </div>
-            )
-          )}
-        </div>
-      </TamagotchiCase>
-
-      {achievements.length > 0 && (
-        <div className="flex flex-wrap items-center justify-center gap-1 px-4 text-center text-[8px] uppercase tracking-widest text-accent-cyan">
-          <Sparkles className="h-3 w-3" />
-          <span>{achievements.length} CONQUISTAS</span>
-        </div>
+          </div>
+        </footer>
       )}
 
       <Dialog open={miniOpen} onOpenChange={setMiniOpen}>
@@ -292,7 +403,7 @@ export function Game() {
       </Dialog>
 
       <Dialog open={graveyardOpen} onOpenChange={setGraveyardOpen}>
-        <DialogContent className="rounded-none border-4 border-lcd-light bg-lcd-dark font-pixel text-lcd-light sm:max-w-sm">
+        <DialogContent className="rounded-none border-4 border-lcd-light bg-lcd-dark font-pixel text-lcd-light sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-[11px] uppercase tracking-widest text-accent-pink">
               CEMITERIO
@@ -301,24 +412,30 @@ export function Game() {
               Bichinhos que partiram...
             </DialogDescription>
           </DialogHeader>
-          <ul className="max-h-60 space-y-2 overflow-y-auto pr-1">
-            {graveyard.map((g) => (
-              <li
-                key={g.id}
-                className="border-2 border-lcd-light/40 bg-lcd-dim/60 p-2 text-[9px] uppercase tracking-widest"
-              >
-                <div className="flex justify-between text-lcd-light">
-                  <span>{g.name}</span>
-                  <span className="text-accent-cyan">{g.species}</span>
-                </div>
-                <div className="text-[8px] text-lcd-light/70">
-                  {g.ageMinutes}min · {g.causeOfDeath}
-                </div>
-              </li>
-            ))}
-          </ul>
+          {graveyard.length === 0 ? (
+            <p className="text-center text-[9px] uppercase tracking-widest text-lcd-light/60">
+              Nenhum bichinho aqui ainda.
+            </p>
+          ) : (
+            <ul className="max-h-80 space-y-2 overflow-y-auto pr-1">
+              {graveyard.map((g) => (
+                <li
+                  key={g.id}
+                  className="border-2 border-lcd-light/40 bg-lcd-dim/60 p-3 text-[9px] uppercase tracking-widest"
+                >
+                  <div className="flex justify-between text-lcd-light">
+                    <span>{g.name}</span>
+                    <span className="text-accent-cyan">{g.species}</span>
+                  </div>
+                  <div className="mt-1 text-[8px] text-lcd-light/70">
+                    {g.ageMinutes}min · {g.causeOfDeath}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </DialogContent>
       </Dialog>
-    </main>
+    </div>
   );
 }

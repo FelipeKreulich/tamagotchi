@@ -163,3 +163,59 @@
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-4px); }
 }
+
+@keyframes ledpulse {
+  0%, 100% { opacity: 0.4; box-shadow: 0 0 0 rgba(255,79,163,0); }
+  50% { opacity: 1; box-shadow: 0 0 12px rgba(255,79,163,0.8); }
+}
+
+@keyframes scanlines {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 12px; }
+}
+
+.lcd-scanlines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.25) 0px,
+    rgba(0, 0, 0, 0.25) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  animation: scanlines 4s linear infinite;
+  pointer-events: none;
+}
+
+.lcd-glow {
+  box-shadow:
+    inset 0 0 40px rgba(124, 240, 116, 0.2),
+    inset 0 0 80px rgba(124, 240, 116, 0.08),
+    0 0 40px rgba(124, 240, 116, 0.15);
+}
+
+.retro-chrome {
+  background: linear-gradient(
+    180deg,
+    #1b3424 0%,
+    #0a120d 40%,
+    #0a120d 60%,
+    #1b3424 100%
+  );
+}
+
+.pixel-corner::before,
+.pixel-corner::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: var(--lcd-light);
+}
+.pixel-corner::before {
+  top: -5px;
+  left: -5px;
+}
+.pixel-corner::after {
+  bottom: -5px;
+  right: -5px;
+}
