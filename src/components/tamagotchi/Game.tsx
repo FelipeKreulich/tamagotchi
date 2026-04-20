@@ -45,6 +45,8 @@ import { DpadButtons } from "./DpadButtons";
 import { AchievementsDialog } from "./AchievementsDialog";
 import { ParticleBurst, type ParticleKind } from "./Particles";
 import { RenameDialog } from "./RenameDialog";
+import { WeatherLayer } from "./WeatherLayer";
+import { useWeather } from "@/hooks/useWeather";
 import { HelpButton } from "./HelpButton";
 import { HelpDialog } from "./HelpDialog";
 import { HistoryDialog } from "./HistoryDialog";
@@ -207,6 +209,7 @@ export function Game() {
   const dict = useT();
   const { locale, setLocale } = useLocale();
   const timeOfDay = useTimeOfDay();
+  const weather = useWeather();
 
   const onStartScreen = !pet;
   const showIntroMusic = !hydrated || onStartScreen || (pet && !pet.isAlive);
@@ -519,6 +522,7 @@ export function Game() {
         <section className="order-1 flex flex-col items-center justify-center gap-6 lg:order-2 lg:col-start-2">
           <LcdScreen className="max-w-2xl">
             <div className="relative flex min-h-[260px] flex-col items-center justify-center gap-5 sm:min-h-[320px]">
+              <WeatherLayer weather={weather} />
               <ParticleBurst trigger={particle.key} kind={particle.kind} />
               {onStartScreen ? (
                 <StartScreen
