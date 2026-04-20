@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { beepAction, beepError, beepSuccess } from "@/lib/audio";
 import { tpl, useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -14,15 +14,24 @@ type Phase = "idle" | "wait" | "now" | "result" | "finished";
 
 const TOTAL_ROUNDS = 5;
 const NOW_WINDOW_MS = 900;
+const RESULT_DISPLAY_MS = 900;
 
 export function ReflexGame({ muted, onFinish }: ReflexGameProps) {
   const dict = useT();
   const [phase, setPhase] = useState<Phase>("idle");
   const [round, setRound] = useState(0);
   const [hits, setHits] = useState(0);
-  const [feedback, setFeedback] = useState<"hit" | "miss" | "early" | null>(null);
-  const targetStartRef = useRef<number>(0);
+  const [feedback, setFeedback] = useState<"hit" | "miss" | "early" | null>(
+    null
+  );
+
   const timersRef = useRef<number[]>([]);
+  const phaseRef = useRef<Phase>("idle");
+  const playRoundRef = useRef<(r: number) => void>(() => {});
+
+  useEffect(() => {
+    phaseRef.current = phase;
+  });
 
   const clearTimers = () => {
     timersRef.current.forEach((id) => window.clearTimeout(id));
@@ -31,48 +40,63 @@ export function ReflexGame({ muted, onFinish }: ReflexGameProps) {
 
   useEffect(() => () => clearTimers(), []);
 
-  const startRound = useCallback(
-    (r: number) => {
-      setRound(r);
-      setPhase("wait");
-      setFeedback(null);
-      clearTimers();
-      const waitMs = 900 + Math.random() * 1600;
-      const t1 = window.setTimeout(() => {
-        targetStartRef.current = Date.now();
-        setPhase("now");
-        const t2 = window.setTimeout(() => {
-          // missed
-          if (phase !== "result") {
-            beepError({ muted });
-            setFeedback("miss");
-            setPhase("result");
-          }
-        }, NOW_WINDOW_MS);
-        timersRef.current.push(t2);
-      }, waitMs);
-      timersRef.current.push(t1);
-    },
-    [muted, phase]
-  );
+  const scheduleNext = (nextR: number) => {
+    const t = window.setTimeout(() => {
+      if (nextR > TOTAL_ROUNDS) {
+        setPhase("finished");
+      } else {
+        playRoundRef.current(nextR);
+      }
+    }, RESULT_DISPLAY_MS);
+    timersRef.current.push(t);
+  };
+
+  const playRound = (r: number) => {
+    clearTimers();
+    setRound(r);
+    setFeedback(null);
+    setPhase("wait");
+    const waitMs = 900 + Math.random() * 1600;
+    const t1 = window.setTimeout(() => {
+      setPhase("now");
+      const t2 = window.setTimeout(() => {
+        // Only fires if the user never pressed within the window.
+        if (phaseRef.current !== "now") return;
+        beepError({ muted });
+        setFeedback("miss");
+        setPhase("result");
+        scheduleNext(r + 1);
+      }, NOW_WINDOW_MS);
+      timersRef.current.push(t2);
+    }, waitMs);
+    timersRef.current.push(t1);
+  };
+
+  useEffect(() => {
+    playRoundRef.current = playRound;
+  });
 
   const startGame = () => {
     setHits(0);
-    startRound(1);
+    playRound(1);
   };
 
   const handlePress = () => {
     if (phase === "wait") {
+      clearTimers();
       beepError({ muted });
       setFeedback("early");
       setPhase("result");
+      scheduleNext(round + 1);
       return;
     }
     if (phase === "now") {
+      clearTimers();
       beepSuccess({ muted });
       setHits((h) => h + 1);
       setFeedback("hit");
       setPhase("result");
+      scheduleNext(round + 1);
     }
   };
 
@@ -80,18 +104,6 @@ export function ReflexGame({ muted, onFinish }: ReflexGameProps) {
   const coins = finalHits;
   const happiness = Math.min(30, finalHits * 5);
   const won = finalHits >= 3;
-
-  useEffect(() => {
-    if (phase !== "result") return;
-    const t = window.setTimeout(() => {
-      if (round >= TOTAL_ROUNDS) {
-        setPhase("finished");
-      } else {
-        startRound(round + 1);
-      }
-    }, 900);
-    timersRef.current.push(t);
-  }, [phase, round, startRound]);
 
   return (
     <div className="flex flex-col items-center gap-4">
