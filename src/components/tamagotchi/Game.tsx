@@ -507,8 +507,9 @@ export function Game() {
           onFinishGeneric={(result) => {
             if (result.happiness > 0) actions.awardHappiness(result.happiness);
             if (result.coins > 0) actions.addCoins(result.coins);
+            const earned = result.won || result.coins > 0;
             toast(
-              result.won ? dict.toasts.minigameWon : dict.toasts.minigameLost
+              earned ? dict.toasts.minigameWon : dict.toasts.minigameLost
             );
           }}
         />
