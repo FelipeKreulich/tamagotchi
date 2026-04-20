@@ -22,13 +22,19 @@ import type {
   Species,
 } from "@/lib/game/types";
 import {
-  beepAction,
   beepAlert,
   beepError,
   beepSuccess,
   melodyAchievement,
   melodyDeath,
   melodyEvolution,
+  sfxBath,
+  sfxCandy,
+  sfxClean,
+  sfxFeed,
+  sfxMedicine,
+  sfxSleep,
+  sfxWake,
 } from "@/lib/audio";
 import {
   INITIAL_SAVE_STATE,
@@ -195,26 +201,21 @@ export function useTamagotchi(): TamagotchiApi {
           return next;
         });
       },
-      feedFood: () =>
-        applyToPet(feedFood, (muted) => beepAction({ muted })),
-      feedCandy: () =>
-        applyToPet(feedCandy, (muted) => beepAction({ muted })),
-      bath: () =>
-        applyToPet(bathAction, (muted) => beepSuccess({ muted })),
+      feedFood: () => applyToPet(feedFood, (muted) => sfxFeed({ muted })),
+      feedCandy: () => applyToPet(feedCandy, (muted) => sfxCandy({ muted })),
+      bath: () => applyToPet(bathAction, (muted) => sfxBath({ muted })),
       medicine: () =>
         applyToPet(
           (p) => (p.isSick ? medicineAction(p) : p),
           (muted, before) => {
             if (!before.isSick) beepError({ muted });
-            else beepSuccess({ muted });
+            else sfxMedicine({ muted });
           }
         ),
       cleanPoop: () =>
-        applyToPet(cleanPoopAction, (muted) => beepAction({ muted })),
-      sleep: () =>
-        applyToPet(sleepAction, (muted) => beepAction({ muted })),
-      wake: () =>
-        applyToPet(wakeAction, (muted) => beepAction({ muted })),
+        applyToPet(cleanPoopAction, (muted) => sfxClean({ muted })),
+      sleep: () => applyToPet(sleepAction, (muted) => sfxSleep({ muted })),
+      wake: () => applyToPet(wakeAction, (muted) => sfxWake({ muted })),
       playMinigame: (won) =>
         applyToPet(
           (p) => applyMinigameResult(p, won),

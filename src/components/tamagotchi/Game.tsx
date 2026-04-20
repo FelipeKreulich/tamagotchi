@@ -24,6 +24,8 @@ import {
 import { useTamagotchi } from "@/hooks/useTamagotchi";
 import { useIntroMusic } from "@/hooks/useIntroMusic";
 import { useCriticalNotifications } from "@/hooks/useCriticalNotifications";
+import { usePetAmbience } from "@/hooks/usePetAmbience";
+import { sfxMinigameStart } from "@/lib/audio";
 import type { Species } from "@/lib/game/types";
 import { StartScreen } from "./StartScreen";
 import { PetSprite } from "./PetSprite";
@@ -113,6 +115,11 @@ export function Game() {
 
   useIntroMusic({ muted: settings.muted, enabled: !!showIntroMusic });
   useCriticalNotifications({ pet, enabled: settings.notificationsEnabled });
+  usePetAmbience({
+    pet,
+    muted: settings.muted,
+    enabled: !showIntroMusic,
+  });
 
   const [menuIndex, setMenuIndex] = useState(0);
   const [miniOpen, setMiniOpen] = useState(false);
@@ -147,7 +154,10 @@ export function Game() {
         id: "play",
         label: "BRINCAR",
         icon: Gamepad2,
-        onSelect: () => setMiniOpen(true),
+        onSelect: () => {
+          sfxMinigameStart({ muted: settings.muted });
+          setMiniOpen(true);
+        },
         disabled: !pet.isAlive || pet.isSleeping,
       },
       {
@@ -210,7 +220,7 @@ export function Game() {
         onSelect: () => setResetOpen(true),
       },
     ];
-  }, [pet, actions]);
+  }, [pet, actions, settings.muted]);
 
   const handleA = () => {
     if (!pet) return;

@@ -89,3 +89,142 @@ export function melodyAchievement(opts: PlayOptions = {}): void {
   const notes = [659, 784, 988, 1319];
   notes.forEach((f, i) => note(ctx, t + i * 0.09, f, 0.09));
 }
+
+// ---------- Action-specific jingles ----------
+
+export function sfxFeed(opts: PlayOptions = {}): void {
+  if (opts.muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  note(ctx, t, 660, 0.06);
+  note(ctx, t + 0.07, 880, 0.06);
+  note(ctx, t + 0.14, 990, 0.1);
+}
+
+export function sfxCandy(opts: PlayOptions = {}): void {
+  if (opts.muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  note(ctx, t, 1047, 0.05);
+  note(ctx, t + 0.05, 1319, 0.05);
+  note(ctx, t + 0.12, 1568, 0.08);
+}
+
+export function sfxBath(opts: PlayOptions = {}): void {
+  if (opts.muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  note(ctx, t, 440, 0.1, 0.09, "sine");
+  note(ctx, t + 0.08, 587, 0.1, 0.09, "sine");
+  note(ctx, t + 0.16, 784, 0.14, 0.09, "sine");
+}
+
+export function sfxSleep(opts: PlayOptions = {}): void {
+  if (opts.muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  note(ctx, t, 523, 0.2, 0.1, "triangle");
+  note(ctx, t + 0.22, 392, 0.25, 0.1, "triangle");
+  note(ctx, t + 0.5, 262, 0.35, 0.09, "triangle");
+}
+
+export function sfxWake(opts: PlayOptions = {}): void {
+  if (opts.muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  note(ctx, t, 523, 0.08);
+  note(ctx, t + 0.1, 784, 0.08);
+  note(ctx, t + 0.2, 1047, 0.1);
+}
+
+export function sfxMedicine(opts: PlayOptions = {}): void {
+  if (opts.muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  note(ctx, t, 988, 0.06);
+  note(ctx, t + 0.08, 880, 0.06);
+  note(ctx, t + 0.16, 1047, 0.12);
+}
+
+export function sfxClean(opts: PlayOptions = {}): void {
+  if (opts.muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  note(ctx, t, 1200, 0.05, 0.08, "square");
+  note(ctx, t + 0.05, 900, 0.05, 0.08, "square");
+  note(ctx, t + 0.1, 1200, 0.05, 0.08, "square");
+  note(ctx, t + 0.15, 700, 0.08, 0.09, "square");
+}
+
+export function sfxMinigameStart(opts: PlayOptions = {}): void {
+  if (opts.muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  note(ctx, t, 440, 0.06);
+  note(ctx, t + 0.08, 660, 0.06);
+}
+
+// ---------- Ambient pet chirps ----------
+
+export function chirpHappy(opts: PlayOptions = {}): void {
+  if (opts.muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  note(ctx, t, 1200, 0.05, 0.08);
+  note(ctx, t + 0.06, 1500, 0.05, 0.08);
+}
+
+export function chirpSad(opts: PlayOptions = {}): void {
+  if (opts.muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  note(ctx, t, 520, 0.12, 0.08, "triangle");
+  note(ctx, t + 0.14, 392, 0.16, 0.08, "triangle");
+}
+
+export function chirpHungry(opts: PlayOptions = {}): void {
+  if (opts.muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  note(ctx, t, 660, 0.08, 0.09);
+  note(ctx, t + 0.1, 523, 0.08, 0.09);
+  note(ctx, t + 0.2, 660, 0.1, 0.09);
+}
+
+export function chirpSick(opts: PlayOptions = {}): void {
+  if (opts.muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  note(ctx, t, 330, 0.14, 0.09, "sawtooth");
+  note(ctx, t + 0.16, 294, 0.2, 0.09, "sawtooth");
+}
+
+export function chirpSleep(opts: PlayOptions = {}): void {
+  if (opts.muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  note(ctx, t, 294, 0.18, 0.05, "sine");
+  note(ctx, t + 0.22, 220, 0.22, 0.05, "sine");
+}
+
+export function chirpDirty(opts: PlayOptions = {}): void {
+  if (opts.muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  note(ctx, t, 220, 0.08, 0.07, "sawtooth");
+  note(ctx, t + 0.09, 180, 0.12, 0.07, "sawtooth");
+}
