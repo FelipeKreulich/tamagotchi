@@ -1,6 +1,12 @@
+import type { Species } from "@/lib/game/types";
 import type { PixelGrid, SpritePalette } from "../Sprite";
 
 export type AccessorySlot = "hat" | "glasses" | "ribbon";
+
+export interface AccessoryOffset {
+  top: string;
+  left: string;
+}
 
 export interface Accessory {
   id: string;
@@ -9,8 +15,12 @@ export interface Accessory {
   price: number;
   palette: SpritePalette;
   frame: PixelGrid;
-  /** Absolute offset in % of the pet sprite's size (anchor = sprite center top). */
-  offset: { top: string; left: string };
+  /**
+   * Per-species anchor. Each sprite has a different head / eye / neck shape,
+   * so we tune positions individually. Values are percentages of the pet's
+   * bounding box. `left` assumes the accessory is translated -50% on X.
+   */
+  offsets: Record<Species, AccessoryOffset>;
   /** Pixel size relative to the pet's pixelSize (multiplier). */
   scale?: number;
 }
@@ -88,7 +98,11 @@ export const ACCESSORIES: Accessory[] = [
     price: 60,
     frame: crownFrame,
     palette: { 0: "transparent", 1: "#ffe14d" },
-    offset: { top: "-18%", left: "50%" },
+    offsets: {
+      blob: { top: "-15%", left: "50%" },
+      dino: { top: "-15%", left: "55%" },
+      cat: { top: "-6%", left: "50%" },
+    },
     scale: 0.85,
   },
   {
@@ -98,7 +112,11 @@ export const ACCESSORIES: Accessory[] = [
     price: 40,
     frame: wizardFrame,
     palette: { 0: "transparent", 1: "#6d3cff", 2: "#ffe14d" },
-    offset: { top: "-28%", left: "50%" },
+    offsets: {
+      blob: { top: "-24%", left: "50%" },
+      dino: { top: "-24%", left: "55%" },
+      cat: { top: "-15%", left: "50%" },
+    },
     scale: 0.85,
   },
   {
@@ -108,7 +126,11 @@ export const ACCESSORIES: Accessory[] = [
     price: 20,
     frame: capFrame,
     palette: { 0: "transparent", 1: "#ff4d6d" },
-    offset: { top: "-13%", left: "50%" },
+    offsets: {
+      blob: { top: "-10%", left: "50%" },
+      dino: { top: "-10%", left: "55%" },
+      cat: { top: "-2%", left: "50%" },
+    },
     scale: 0.85,
   },
   {
@@ -118,7 +140,11 @@ export const ACCESSORIES: Accessory[] = [
     price: 25,
     frame: roundFrame,
     palette: { 0: "transparent", 1: "#0a0f0a" },
-    offset: { top: "22%", left: "50%" },
+    offsets: {
+      blob: { top: "26%", left: "50%" },
+      dino: { top: "22%", left: "55%" },
+      cat: { top: "34%", left: "50%" },
+    },
     scale: 0.85,
   },
   {
@@ -128,7 +154,11 @@ export const ACCESSORIES: Accessory[] = [
     price: 45,
     frame: shadesFrame,
     palette: { 0: "transparent", 1: "#000000" },
-    offset: { top: "22%", left: "50%" },
+    offsets: {
+      blob: { top: "26%", left: "50%" },
+      dino: { top: "22%", left: "55%" },
+      cat: { top: "34%", left: "50%" },
+    },
     scale: 0.85,
   },
   {
@@ -138,7 +168,11 @@ export const ACCESSORIES: Accessory[] = [
     price: 70,
     frame: starFrame,
     palette: { 0: "transparent", 1: "#ffe14d" },
-    offset: { top: "16%", left: "50%" },
+    offsets: {
+      blob: { top: "22%", left: "50%" },
+      dino: { top: "18%", left: "55%" },
+      cat: { top: "30%", left: "50%" },
+    },
     scale: 0.85,
   },
   {
@@ -148,7 +182,11 @@ export const ACCESSORIES: Accessory[] = [
     price: 20,
     frame: bowFrame,
     palette: { 0: "transparent", 1: "#ff4fa3" },
-    offset: { top: "68%", left: "50%" },
+    offsets: {
+      blob: { top: "62%", left: "50%" },
+      dino: { top: "48%", left: "50%" },
+      cat: { top: "60%", left: "50%" },
+    },
     scale: 0.8,
   },
   {
@@ -158,7 +196,11 @@ export const ACCESSORIES: Accessory[] = [
     price: 35,
     frame: collarFrame,
     palette: { 0: "transparent", 1: "#4de1ff" },
-    offset: { top: "74%", left: "50%" },
+    offsets: {
+      blob: { top: "66%", left: "50%" },
+      dino: { top: "52%", left: "50%" },
+      cat: { top: "64%", left: "50%" },
+    },
     scale: 0.85,
   },
   {
@@ -168,7 +210,11 @@ export const ACCESSORIES: Accessory[] = [
     price: 50,
     frame: tieFrame,
     palette: { 0: "transparent", 1: "#ff4d4d" },
-    offset: { top: "64%", left: "50%" },
+    offsets: {
+      blob: { top: "58%", left: "50%" },
+      dino: { top: "46%", left: "50%" },
+      cat: { top: "58%", left: "50%" },
+    },
     scale: 0.7,
   },
 ];

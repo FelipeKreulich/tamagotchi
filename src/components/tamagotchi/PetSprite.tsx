@@ -61,20 +61,23 @@ export function PetSprite({
         pixelSize={pixelSize}
         frameDurationMs={pet.mood === "sleeping" ? 1200 : 420}
       />
-      {equippedAccessories.map((a) => (
-        <AccessorySprite
-          key={a.id}
-          frame={a.frame}
-          palette={a.palette}
-          pixelSize={Math.max(2, Math.round(pixelSize * (a.scale ?? 1)))}
-          className="pointer-events-none absolute"
-          style={{
-            top: a.offset.top,
-            left: a.offset.left,
-            transform: "translate(-50%, 0)",
-          }}
-        />
-      ))}
+      {equippedAccessories.map((a) => {
+        const offset = a.offsets[pet.species];
+        return (
+          <AccessorySprite
+            key={a.id}
+            frame={a.frame}
+            palette={a.palette}
+            pixelSize={Math.max(2, Math.round(pixelSize * (a.scale ?? 1)))}
+            className="pointer-events-none absolute"
+            style={{
+              top: offset.top,
+              left: offset.left,
+              transform: "translate(-50%, 0)",
+            }}
+          />
+        );
+      })}
       {pet.variant === "mega" && pet.stage !== "egg" && (
         <span
           aria-hidden
