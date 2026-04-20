@@ -369,14 +369,20 @@ export function Game() {
         </div>
       </header>
 
-      <div className="relative z-10 flex flex-1 flex-col gap-6 p-4 sm:p-8 md:gap-8 lg:grid lg:grid-cols-[300px_1fr_300px] lg:items-stretch">
+      <div
+        className={`relative z-10 flex flex-1 flex-col gap-6 p-4 sm:p-8 md:gap-8 lg:items-stretch ${
+          pet
+            ? "lg:grid lg:grid-cols-[300px_1fr_300px]"
+            : "lg:flex lg:items-center lg:justify-center"
+        }`}
+      >
         {pet && (
-          <aside className="order-2 lg:order-1">
+          <aside className="order-2 lg:order-1 lg:col-start-1">
             <HUD pet={pet} />
           </aside>
         )}
 
-        <section className="order-1 flex flex-col items-center justify-center gap-6 lg:order-2">
+        <section className="order-1 flex flex-col items-center justify-center gap-6 lg:order-2 lg:col-start-2">
           <LcdScreen className="max-w-2xl">
             <div className="flex min-h-[260px] flex-col items-center justify-center gap-5 sm:min-h-[320px]">
               {onStartScreen ? (
@@ -420,7 +426,7 @@ export function Game() {
         </section>
 
         {pet && (
-          <aside className="order-3">
+          <aside className="order-3 lg:col-start-3">
             <StatusPanel
               achievementCount={achievements.length}
               totalAchievements={TOTAL_ACHIEVEMENTS}
