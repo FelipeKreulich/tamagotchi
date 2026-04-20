@@ -48,6 +48,7 @@ import { HelpDialog } from "./HelpDialog";
 import { HistoryDialog } from "./HistoryDialog";
 import { EvolutionFlash } from "./EvolutionFlash";
 import { DaycareDialog } from "./DaycareDialog";
+import { ShopDialog } from "./ShopDialog";
 import { LineChart, Coins, HeartPulse } from "lucide-react";
 import { ACHIEVEMENTS } from "@/lib/game/achievements";
 import { hasEvolved } from "@/lib/game/lifecycle";
@@ -74,6 +75,7 @@ function StatusPanel({
   onOpenAchievements,
   onOpenHistory,
   onOpenDaycare,
+  onOpenShop,
   dict,
 }: {
   achievementCount: number;
@@ -85,6 +87,7 @@ function StatusPanel({
   onOpenAchievements: () => void;
   onOpenHistory: () => void;
   onOpenDaycare: () => void;
+  onOpenShop: () => void;
   dict: Dictionary;
 }) {
   return (
@@ -93,17 +96,21 @@ function StatusPanel({
         {dict.status.title}
       </p>
       <div className="space-y-3">
-        <div className="flex items-center justify-between border-2 border-accent-pink/50 bg-accent-pink/10 p-3">
+        <button
+          type="button"
+          onClick={onOpenShop}
+          className="flex w-full items-center justify-between border-2 border-accent-pink/50 bg-accent-pink/10 p-3 transition-colors hover:border-accent-pink"
+        >
           <div className="flex items-center gap-2">
             <Coins className="h-4 w-4 text-accent-pink" />
             <span className="text-[9px] uppercase tracking-widest text-lcd-light">
-              {dict.minigameHub.coins}
+              {dict.status.shop}
             </span>
           </div>
           <span className="text-sm uppercase tracking-widest text-accent-pink">
             {coins}
           </span>
-        </div>
+        </button>
         <button
           type="button"
           onClick={onOpenAchievements}
@@ -183,8 +190,16 @@ const TOTAL_ACHIEVEMENTS = ACHIEVEMENTS.length;
 
 export function Game() {
   const tama = useTamagotchi();
-  const { pet, hydrated, settings, actions, achievements, graveyard, coins } =
-    tama;
+  const {
+    pet,
+    hydrated,
+    settings,
+    actions,
+    achievements,
+    graveyard,
+    coins,
+    cosmetics,
+  } = tama;
   const dict = useT();
   const { locale, setLocale } = useLocale();
   const timeOfDay = useTimeOfDay();
@@ -212,6 +227,7 @@ export function Game() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [daycareOpen, setDaycareOpen] = useState(false);
+  const [shopOpen, setShopOpen] = useState(false);
   const [patBouncing, setPatBouncing] = useState(false);
   const lastPatAtRef = useRef(0);
 
@@ -480,6 +496,7 @@ export function Game() {
                           bouncing={patBouncing}
                           clickable
                           disabled={pet.isSleeping}
+                          equipped={cosmetics.equipped}
                         />
                       )}
                     </div>
@@ -512,6 +529,7 @@ export function Game() {
               onOpenAchievements={() => setAchievementsOpen(true)}
               onOpenHistory={() => setHistoryOpen(true)}
               onOpenDaycare={() => setDaycareOpen(true)}
+              onOpenShop={() => setShopOpen(true)}
               dict={dict}
             />
           </aside>
@@ -614,6 +632,20 @@ export function Game() {
         rules={settings.daycareRules}
         onToggle={actions.setDaycareEnabled}
         onChangeRules={actions.setDaycareRules}
+      />
+
+      <ShopDialog
+        open={shopOpen}
+        onOpenChange={setShopOpen}
+        coins={coins}
+        cosmetics={cosmetics}
+        onBuy={(id) => {
+          const result = actions.buyAccessory(id);
+          if (result.success) toast(dict.shop.bought);
+          return result;
+        }}
+        onEquip={actions.equipAccessory}
+        onUnequip={actions.unequipSlot}
       />
 
       {evolvedStage && <EvolutionFlash stage={evolvedStage} />}

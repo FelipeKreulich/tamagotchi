@@ -13,12 +13,22 @@ export interface DaycareRules {
   autoWakeThreshold: number;
 }
 
+export interface Cosmetics {
+  owned: string[];
+  equipped: {
+    hat: string | null;
+    glasses: string | null;
+    ribbon: string | null;
+  };
+}
+
 export interface SaveStateV1 {
   version: 1;
   pet: Pet | null;
   graveyard: GraveyardEntry[];
   achievements: Achievement[];
   coins: number;
+  cosmetics: Cosmetics;
   settings: {
     muted: boolean;
     notificationsEnabled: boolean;
@@ -27,6 +37,11 @@ export interface SaveStateV1 {
   };
   updatedAt: number;
 }
+
+export const INITIAL_COSMETICS: Cosmetics = {
+  owned: [],
+  equipped: { hat: null, glasses: null, ribbon: null },
+};
 
 export const DEFAULT_DAYCARE_RULES: DaycareRules = {
   feedThreshold: 30,
@@ -45,6 +60,10 @@ export const INITIAL_SAVE_STATE: SaveState = {
   graveyard: [],
   achievements: [],
   coins: 0,
+  cosmetics: {
+    owned: [],
+    equipped: { hat: null, glasses: null, ribbon: null },
+  },
   settings: {
     muted: false,
     notificationsEnabled: false,

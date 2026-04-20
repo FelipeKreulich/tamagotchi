@@ -4,6 +4,12 @@ import type { Pet } from "@/lib/game/types";
 import { cn } from "@/lib/utils";
 import { Sprite } from "./Sprite";
 import { getSpriteFor, poopFrames, poopPalette } from "./sprites";
+import { AccessorySprite } from "./accessories/AccessorySprite";
+import {
+  accessoryById,
+  type Accessory,
+  type AccessorySlot,
+} from "./accessories/catalog";
 
 interface PetSpriteProps {
   pet: Pet;
@@ -12,6 +18,7 @@ interface PetSpriteProps {
   bouncing?: boolean;
   disabled?: boolean;
   clickable?: boolean;
+  equipped?: Partial<Record<AccessorySlot, string | null>>;
 }
 
 export function PetSprite({
@@ -21,6 +28,7 @@ export function PetSprite({
   bouncing,
   disabled,
   clickable,
+  equipped,
 }: PetSpriteProps) {
   const stage = pet.stage === "egg" ? "egg" : "post-egg";
   const { frames, palette } = getSpriteFor(
@@ -39,6 +47,12 @@ export function PetSprite({
       ? "drop-shadow-[0_0_6px_rgba(255,42,77,0.5)]"
       : "";
 
+  const equippedAccessories: Accessory[] = equipped
+    ? (["hat", "glasses", "ribbon"] as AccessorySlot[])
+        .map((slot) => accessoryById(equipped[slot]))
+        .filter((a): a is Accessory => a !== null && pet.stage !== "egg")
+    : [];
+
   const inner = (
     <div className={cn("relative", variantAura)}>
       <Sprite
@@ -47,6 +61,20 @@ export function PetSprite({
         pixelSize={pixelSize}
         frameDurationMs={pet.mood === "sleeping" ? 1200 : 420}
       />
+      {equippedAccessories.map((a) => (
+        <AccessorySprite
+          key={a.id}
+          frame={a.frame}
+          palette={a.palette}
+          pixelSize={Math.max(2, Math.round(pixelSize * (a.scale ?? 1)))}
+          className="pointer-events-none absolute"
+          style={{
+            top: a.offset.top,
+            left: a.offset.left,
+            transform: "translate(-50%, 0)",
+          }}
+        />
+      ))}
       {pet.variant === "mega" && pet.stage !== "egg" && (
         <span
           aria-hidden

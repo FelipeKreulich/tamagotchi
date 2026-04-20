@@ -43,11 +43,20 @@ export function clearSave(): void {
 
 export function migrate(raw: unknown): SaveState {
   if (isSaveStateV1(raw)) {
+    const rawCosmetics = (raw as { cosmetics?: Partial<SaveState["cosmetics"]> })
+      .cosmetics;
     return {
       ...INITIAL_SAVE_STATE,
       ...raw,
       coins: typeof raw.coins === "number" ? raw.coins : 0,
       pet: normalizePet(raw.pet),
+      cosmetics: {
+        owned: Array.isArray(rawCosmetics?.owned) ? rawCosmetics.owned : [],
+        equipped: {
+          ...INITIAL_SAVE_STATE.cosmetics.equipped,
+          ...(rawCosmetics?.equipped ?? {}),
+        },
+      },
       settings: {
         ...INITIAL_SAVE_STATE.settings,
         ...raw.settings,

@@ -172,6 +172,45 @@ export function sfxMinigameStart(opts: PlayOptions = {}): void {
   note(ctx, t + 0.08, 660, 0.06);
 }
 
+export function sfxPurchase(opts: PlayOptions = {}): void {
+  if (opts.muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  // Bright ka-ching arpeggio (C5 E5 G5) + bell-like top note.
+  note(ctx, t, 523, 0.06, 0.12, "square");
+  note(ctx, t + 0.07, 659, 0.06, 0.12, "square");
+  note(ctx, t + 0.14, 784, 0.08, 0.13, "square");
+  note(ctx, t + 0.22, 1319, 0.18, 0.1, "triangle");
+}
+
+export function sfxEquip(opts: PlayOptions = {}): void {
+  if (opts.muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  note(ctx, t, 660, 0.05, 0.1, "square");
+  note(ctx, t + 0.06, 990, 0.07, 0.1, "square");
+}
+
+export function sfxUnequip(opts: PlayOptions = {}): void {
+  if (opts.muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  note(ctx, t, 880, 0.05, 0.09, "square");
+  note(ctx, t + 0.06, 523, 0.07, 0.09, "square");
+}
+
+export function sfxDenied(opts: PlayOptions = {}): void {
+  if (opts.muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  note(ctx, t, 196, 0.12, 0.12, "square");
+  note(ctx, t + 0.14, 165, 0.2, 0.12, "square");
+}
+
 // ---------- Ambient pet chirps ----------
 
 export function chirpHappy(opts: PlayOptions = {}): void {

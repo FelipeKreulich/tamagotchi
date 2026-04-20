@@ -161,6 +161,33 @@ export interface Dictionary {
     daycare: string;
     daycareOn: string;
     daycareOff: string;
+    shop: string;
+  };
+  shop: {
+    title: string;
+    subtitle: string;
+    balance: string;
+    slotHat: string;
+    slotGlasses: string;
+    slotRibbon: string;
+    buy: string;
+    own: string;
+    equip: string;
+    unequip: string;
+    insufficient: string;
+    bought: string;
+    items: Record<
+      | "hatCrown"
+      | "hatWizard"
+      | "hatCap"
+      | "glassesRound"
+      | "glassesShades"
+      | "glassesStar"
+      | "ribbonBow"
+      | "ribbonCollar"
+      | "ribbonTie",
+      string
+    >;
   };
   daycare: {
     title: string;

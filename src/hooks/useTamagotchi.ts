@@ -33,9 +33,13 @@ import {
   sfxBath,
   sfxCandy,
   sfxClean,
+  sfxDenied,
+  sfxEquip,
   sfxFeed,
   sfxMedicine,
+  sfxPurchase,
   sfxSleep,
+  sfxUnequip,
   sfxWake,
 } from "@/lib/audio";
 import {
@@ -47,7 +51,11 @@ import {
 } from "@/lib/storage";
 import { ACHIEVEMENTS, checkAchievements } from "@/lib/game/achievements";
 import { runDaycare } from "@/lib/game/daycare";
-import type { DaycareRules } from "@/lib/storage/schema";
+import type { Cosmetics, DaycareRules } from "@/lib/storage/schema";
+import {
+  ACCESSORIES_BY_ID,
+  type AccessorySlot,
+} from "@/components/tamagotchi/accessories/catalog";
 
 export interface TamagotchiApi {
   hydrated: boolean;
@@ -55,6 +63,7 @@ export interface TamagotchiApi {
   graveyard: GraveyardEntry[];
   achievements: Achievement[];
   settings: SaveState["settings"];
+  cosmetics: Cosmetics;
   coins: number;
   isAlive: boolean;
   actions: {
@@ -75,6 +84,9 @@ export interface TamagotchiApi {
     setNotificationsEnabled: (enabled: boolean) => void;
     setDaycareEnabled: (enabled: boolean) => void;
     setDaycareRules: (rules: DaycareRules) => void;
+    buyAccessory: (id: string) => { success: boolean; error?: string };
+    equipAccessory: (id: string) => void;
+    unequipSlot: (slot: AccessorySlot) => void;
     exportSave: () => string;
     importSave: (raw: string) => { success: boolean; error?: string };
   };
@@ -316,6 +328,73 @@ export function useTamagotchi(): TamagotchiApi {
           return next;
         });
       },
+      buyAccessory: (id) => {
+        const accessory = ACCESSORIES_BY_ID.get(id);
+        if (!accessory) return { success: false, error: "unknown item" };
+        let result: { success: boolean; error?: string } = { success: false };
+        setState((prev) => {
+          if (prev.cosmetics.owned.includes(id)) {
+            result = { success: false, error: "already owned" };
+            return prev;
+          }
+          if (prev.coins < accessory.price) {
+            sfxDenied({ muted: prev.settings.muted });
+            result = { success: false, error: "not enough coins" };
+            return prev;
+          }
+          const next: SaveState = {
+            ...prev,
+            coins: prev.coins - accessory.price,
+            cosmetics: {
+              ...prev.cosmetics,
+              owned: [...prev.cosmetics.owned, id],
+              equipped: {
+                ...prev.cosmetics.equipped,
+                [accessory.slot]: id,
+              },
+            },
+          };
+          sfxPurchase({ muted: prev.settings.muted });
+          persist(next);
+          result = { success: true };
+          return next;
+        });
+        return result;
+      },
+      equipAccessory: (id) => {
+        const accessory = ACCESSORIES_BY_ID.get(id);
+        if (!accessory) return;
+        setState((prev) => {
+          if (!prev.cosmetics.owned.includes(id)) return prev;
+          const next: SaveState = {
+            ...prev,
+            cosmetics: {
+              ...prev.cosmetics,
+              equipped: {
+                ...prev.cosmetics.equipped,
+                [accessory.slot]: id,
+              },
+            },
+          };
+          sfxEquip({ muted: prev.settings.muted });
+          persist(next);
+          return next;
+        });
+      },
+      unequipSlot: (slot) => {
+        setState((prev) => {
+          const next: SaveState = {
+            ...prev,
+            cosmetics: {
+              ...prev.cosmetics,
+              equipped: { ...prev.cosmetics.equipped, [slot]: null },
+            },
+          };
+          sfxUnequip({ muted: prev.settings.muted });
+          persist(next);
+          return next;
+        });
+      },
       exportSave: () => {
         let snapshot: SaveState = INITIAL_SAVE_STATE;
         setState((prev) => {
@@ -350,6 +429,7 @@ export function useTamagotchi(): TamagotchiApi {
     graveyard: state.graveyard,
     achievements: state.achievements,
     settings: state.settings,
+    cosmetics: state.cosmetics,
     coins: state.coins,
     isAlive: !!state.pet?.isAlive,
     actions,
