@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Lock } from "lucide-react";
+import { Check, Lock, Star } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -8,15 +8,21 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ACHIEVEMENTS } from "@/lib/game/achievements";
+import {
+  ACHIEVEMENTS,
+  ACHIEVEMENT_EMOJI,
+} from "@/lib/game/achievements";
 import { tpl, useLocale, useT } from "@/lib/i18n";
 import type { Achievement } from "@/lib/game/types";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface AchievementsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   unlocked: Achievement[];
+  favorites: string[];
+  onToggleFavorite: (id: string) => { success: boolean; error?: string };
 }
 
 function formatDate(ts: number, locale: string): string {
@@ -35,6 +41,8 @@ export function AchievementsDialog({
   open,
   onOpenChange,
   unlocked,
+  favorites,
+  onToggleFavorite,
 }: AchievementsDialogProps) {
   const dict = useT();
   const { locale } = useLocale();
@@ -43,6 +51,20 @@ export function AchievementsDialog({
   const unlockedCount = unlocked.length;
   const total = ACHIEVEMENTS.length;
   const pct = Math.round((unlockedCount / total) * 100);
+
+  const handlePin = (id: string) => {
+    const wasPinned = favorites.includes(id);
+    const result = onToggleFavorite(id);
+    if (result.success) {
+      toast(
+        wasPinned
+          ? dict.achievementsDialog.showcaseUnpinned
+          : dict.achievementsDialog.showcasePinned
+      );
+    } else if (result.error === "max favorites reached") {
+      toast.error(dict.achievementsDialog.showcaseFull);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -78,7 +100,9 @@ export function AchievementsDialog({
           {ACHIEVEMENTS.map((def) => {
             const got = unlockedById.get(def.id);
             const isUnlocked = !!got?.unlockedAt;
+            const isFavorite = favorites.includes(def.id);
             const text = dict.achievements[def.key];
+            const emoji = ACHIEVEMENT_EMOJI[def.key] ?? "★";
             return (
               <li
                 key={def.id}
@@ -91,14 +115,14 @@ export function AchievementsDialog({
               >
                 <div
                   className={cn(
-                    "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center border-2",
+                    "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center border-2 text-sm",
                     isUnlocked
                       ? "border-accent-cyan bg-accent-cyan/30 text-accent-cyan"
                       : "border-lcd-light/40 bg-lcd-dark text-lcd-light/50"
                   )}
                 >
                   {isUnlocked ? (
-                    <Check className="h-3 w-3" />
+                    <span aria-hidden>{emoji}</span>
                   ) : (
                     <Lock className="h-3 w-3" />
                   )}
@@ -123,6 +147,36 @@ export function AchievementsDialog({
                     </p>
                   )}
                 </div>
+                {isUnlocked ? (
+                  <button
+                    type="button"
+                    onClick={() => handlePin(def.id)}
+                    aria-pressed={isFavorite}
+                    aria-label={
+                      isFavorite
+                        ? dict.achievementsDialog.unpin
+                        : dict.achievementsDialog.pin
+                    }
+                    title={
+                      isFavorite
+                        ? dict.achievementsDialog.unpin
+                        : dict.achievementsDialog.pin
+                    }
+                    className={cn(
+                      "flex h-6 w-6 shrink-0 items-center justify-center border-2 transition-colors",
+                      isFavorite
+                        ? "border-accent-pink bg-accent-pink/20 text-accent-pink"
+                        : "border-lcd-light/40 bg-lcd-dark text-lcd-light/60 hover:border-accent-pink hover:text-accent-pink"
+                    )}
+                  >
+                    <Star
+                      className="h-3 w-3"
+                      fill={isFavorite ? "currentColor" : "none"}
+                    />
+                  </button>
+                ) : (
+                  <Check className="mt-1 h-3 w-3 shrink-0 opacity-0" />
+                )}
               </li>
             );
           })}

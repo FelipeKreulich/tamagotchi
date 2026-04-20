@@ -162,6 +162,8 @@ export interface Dictionary {
     daycareOn: string;
     daycareOff: string;
     shop: string;
+    showcase: string;
+    showcaseEmpty: string;
   };
   shop: {
     title: string;
@@ -216,6 +218,11 @@ export interface Dictionary {
     progress: string;
     unlockedOn: string;
     unlockedBanner: string;
+    pin: string;
+    unpin: string;
+    showcaseFull: string;
+    showcasePinned: string;
+    showcaseUnpinned: string;
   };
   achievements: {
     firstHatch: { title: string; description: string };

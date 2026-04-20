@@ -166,6 +166,8 @@ const dict: Dictionary = {
     daycareOn: "ON",
     daycareOff: "OFF",
     shop: "SHOP",
+    showcase: "SHOWCASE",
+    showcaseEmpty: "Empty",
   },
   shop: {
     title: "ACCESSORY SHOP",
@@ -220,6 +222,11 @@ const dict: Dictionary = {
     progress: "{current} of {total} unlocked ({pct}%)",
     unlockedOn: "unlocked on {date}",
     unlockedBanner: "ACHIEVEMENT UNLOCKED",
+    pin: "PIN",
+    unpin: "UNPIN",
+    showcaseFull: "Max 3 featured. Unpin one first.",
+    showcasePinned: "⭐ Pinned to showcase",
+    showcaseUnpinned: "Removed from showcase",
   },
   achievements: {
     firstHatch: {

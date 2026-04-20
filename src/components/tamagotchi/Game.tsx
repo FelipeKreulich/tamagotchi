@@ -43,6 +43,7 @@ import { FullscreenToggle } from "./FullscreenToggle";
 import { LcdScreen } from "./LcdScreen";
 import { DpadButtons } from "./DpadButtons";
 import { AchievementsDialog } from "./AchievementsDialog";
+import { AchievementShowcase } from "./AchievementShowcase";
 import { ParticleBurst, type ParticleKind } from "./Particles";
 import { RenameDialog } from "./RenameDialog";
 import { WeatherLayer } from "./WeatherLayer";
@@ -78,6 +79,7 @@ function StatusPanel({
   graveyardCount,
   coins,
   daycareEnabled,
+  favorites,
   onOpenGraveyard,
   onOpenAchievements,
   onOpenHistory,
@@ -90,6 +92,7 @@ function StatusPanel({
   graveyardCount: number;
   coins: number;
   daycareEnabled: boolean;
+  favorites: string[];
   onOpenGraveyard: () => void;
   onOpenAchievements: () => void;
   onOpenHistory: () => void;
@@ -102,6 +105,12 @@ function StatusPanel({
       <p className="text-[8px] uppercase tracking-[0.3em] text-lcd-light/60">
         {dict.status.title}
       </p>
+
+      <AchievementShowcase
+        favorites={favorites}
+        onOpenPicker={onOpenAchievements}
+      />
+
       <div className="space-y-3">
         <button
           type="button"
@@ -203,6 +212,7 @@ export function Game() {
     settings,
     actions,
     achievements,
+    favorites,
     graveyard,
     coins,
     cosmetics,
@@ -582,6 +592,7 @@ export function Game() {
               graveyardCount={graveyard.length}
               coins={coins}
               daycareEnabled={settings.daycareEnabled}
+              favorites={favorites}
               onOpenGraveyard={() => setGraveyardOpen(true)}
               onOpenAchievements={() => setAchievementsOpen(true)}
               onOpenHistory={() => setHistoryOpen(true)}
@@ -671,6 +682,8 @@ export function Game() {
         open={achievementsOpen}
         onOpenChange={setAchievementsOpen}
         unlocked={achievements}
+        favorites={favorites}
+        onToggleFavorite={actions.toggleFavorite}
       />
 
       <HelpDialog

@@ -166,6 +166,8 @@ const dict: Dictionary = {
     daycareOn: "LIGADA",
     daycareOff: "DESLIGADA",
     shop: "LOJA",
+    showcase: "VITRINE",
+    showcaseEmpty: "Vazio",
   },
   shop: {
     title: "LOJA DE ACESSORIOS",
@@ -220,6 +222,11 @@ const dict: Dictionary = {
     progress: "{current} de {total} desbloqueadas ({pct}%)",
     unlockedOn: "obtida em {date}",
     unlockedBanner: "CONQUISTA DESBLOQUEADA",
+    pin: "FIXAR",
+    unpin: "SOLTAR",
+    showcaseFull: "Máximo 3 destaques. Remove um primeiro.",
+    showcasePinned: "⭐ Fixada na vitrine",
+    showcaseUnpinned: "Removida da vitrine",
   },
   achievements: {
     firstHatch: {

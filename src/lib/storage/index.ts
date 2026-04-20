@@ -49,6 +49,11 @@ export function migrate(raw: unknown): SaveState {
       ...INITIAL_SAVE_STATE,
       ...raw,
       coins: typeof raw.coins === "number" ? raw.coins : 0,
+      favorites: Array.isArray((raw as { favorites?: unknown }).favorites)
+        ? ((raw as { favorites: unknown }).favorites as string[]).filter(
+            (v) => typeof v === "string"
+          )
+        : [],
       pet: normalizePet(raw.pet),
       cosmetics: {
         owned: Array.isArray(rawCosmetics?.owned) ? rawCosmetics.owned : [],

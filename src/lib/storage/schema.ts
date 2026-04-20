@@ -27,6 +27,7 @@ export interface SaveStateV1 {
   pet: Pet | null;
   graveyard: GraveyardEntry[];
   achievements: Achievement[];
+  favorites: string[];
   coins: number;
   cosmetics: Cosmetics;
   settings: {
@@ -59,6 +60,7 @@ export const INITIAL_SAVE_STATE: SaveState = {
   pet: null,
   graveyard: [],
   achievements: [],
+  favorites: [],
   coins: 0,
   cosmetics: {
     owned: [],

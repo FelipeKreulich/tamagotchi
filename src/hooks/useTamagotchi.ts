@@ -49,7 +49,11 @@ import {
   saveSave,
   type SaveState,
 } from "@/lib/storage";
-import { ACHIEVEMENTS, checkAchievements } from "@/lib/game/achievements";
+import {
+  ACHIEVEMENTS,
+  MAX_FAVORITES,
+  checkAchievements,
+} from "@/lib/game/achievements";
 import { runDaycare } from "@/lib/game/daycare";
 import type { Cosmetics, DaycareRules } from "@/lib/storage/schema";
 import {
@@ -62,6 +66,7 @@ export interface TamagotchiApi {
   pet: Pet | null;
   graveyard: GraveyardEntry[];
   achievements: Achievement[];
+  favorites: string[];
   settings: SaveState["settings"];
   cosmetics: Cosmetics;
   coins: number;
@@ -88,6 +93,7 @@ export interface TamagotchiApi {
     buyAccessory: (id: string) => { success: boolean; error?: string };
     equipAccessory: (id: string) => void;
     unequipSlot: (slot: AccessorySlot) => void;
+    toggleFavorite: (id: string) => { success: boolean; error?: string };
     exportSave: () => string;
     importSave: (raw: string) => { success: boolean; error?: string };
   };
@@ -404,6 +410,43 @@ export function useTamagotchi(): TamagotchiApi {
           return next;
         });
       },
+      toggleFavorite: (id) => {
+        let result: { success: boolean; error?: string } = { success: false };
+        setState((prev) => {
+          const alreadyPinned = prev.favorites.includes(id);
+          if (alreadyPinned) {
+            const next: SaveState = {
+              ...prev,
+              favorites: prev.favorites.filter((x) => x !== id),
+            };
+            sfxUnequip({ muted: prev.settings.muted });
+            persist(next);
+            result = { success: true };
+            return next;
+          }
+          const unlocked = prev.achievements.some(
+            (a) => a.id === id && a.unlockedAt
+          );
+          if (!unlocked) {
+            result = { success: false, error: "not unlocked" };
+            return prev;
+          }
+          if (prev.favorites.length >= MAX_FAVORITES) {
+            sfxDenied({ muted: prev.settings.muted });
+            result = { success: false, error: "max favorites reached" };
+            return prev;
+          }
+          const next: SaveState = {
+            ...prev,
+            favorites: [...prev.favorites, id],
+          };
+          sfxEquip({ muted: prev.settings.muted });
+          persist(next);
+          result = { success: true };
+          return next;
+        });
+        return result;
+      },
       exportSave: () => {
         let snapshot: SaveState = INITIAL_SAVE_STATE;
         setState((prev) => {
@@ -437,6 +480,7 @@ export function useTamagotchi(): TamagotchiApi {
     pet: state.pet,
     graveyard: state.graveyard,
     achievements: state.achievements,
+    favorites: state.favorites,
     settings: state.settings,
     cosmetics: state.cosmetics,
     coins: state.coins,

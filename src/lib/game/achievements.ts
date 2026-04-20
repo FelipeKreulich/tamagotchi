@@ -2,6 +2,31 @@ import type { SaveState } from "@/lib/storage";
 import type { Achievement } from "./types";
 import type { Dictionary } from "@/lib/i18n";
 
+export const ACHIEVEMENT_EMOJI: Record<string, string> = {
+  firstHatch: "🥚",
+  teenReached: "🧒",
+  adultReached: "👤",
+  elderReached: "👴",
+  firstWeek: "🗓",
+  neverSick: "💪",
+  fullLife: "🌅",
+  petCollector: "💀",
+  chef: "🍳",
+  sweetTooth: "🍬",
+  bathMaster: "🛁",
+  gamer: "🎮",
+  champion: "🏆",
+  sleepyHead: "😴",
+  nurse: "💊",
+  cleanFreak: "🧹",
+  marathon: "⏱",
+  legend: "👑",
+  megaEvolution: "★",
+  darkEvolution: "☠",
+};
+
+export const MAX_FAVORITES = 3;
+
 export type AchievementKey =
   | "firstHatch"
   | "teenReached"
