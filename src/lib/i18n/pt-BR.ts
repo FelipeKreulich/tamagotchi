@@ -17,6 +17,10 @@ const dict: Dictionary = {
     notifAriaOn: "Desativar notificações",
     notifAriaOff: "Ativar notificações",
     languageLabel: "IDIOMA",
+    fullscreen: "TELA CHEIA",
+    fullscreenExit: "SAIR",
+    fullscreenAria: "Entrar em tela cheia",
+    fullscreenExitAria: "Sair da tela cheia",
   },
   stats: {
     hunger: "FOME",

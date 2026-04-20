@@ -39,6 +39,7 @@ import { eggFrames } from "./sprites/egg";
 import { SPECIES_META } from "./sprites";
 import { NotificationToggle } from "./NotificationToggle";
 import { LocaleToggle } from "./LocaleToggle";
+import { FullscreenToggle } from "./FullscreenToggle";
 import { LcdScreen } from "./LcdScreen";
 import { DpadButtons } from "./DpadButtons";
 import { AchievementsDialog } from "./AchievementsDialog";
@@ -431,6 +432,7 @@ export function Game() {
             enabled={settings.notificationsEnabled}
             onChange={actions.setNotificationsEnabled}
           />
+          <FullscreenToggle />
           <HelpButton onClick={() => setHelpOpen(true)} />
         </div>
       </header>

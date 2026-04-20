@@ -25,6 +25,10 @@ export interface Dictionary {
     notifAriaOn: string;
     notifAriaOff: string;
     languageLabel: string;
+    fullscreen: string;
+    fullscreenExit: string;
+    fullscreenAria: string;
+    fullscreenExitAria: string;
   };
   stats: {
     hunger: string;
