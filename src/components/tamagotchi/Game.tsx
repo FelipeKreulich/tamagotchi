@@ -38,6 +38,8 @@ import { SPECIES_META } from "./sprites";
 import { NotificationToggle } from "./NotificationToggle";
 import { LcdScreen } from "./LcdScreen";
 import { DpadButtons } from "./DpadButtons";
+import { AchievementsDialog } from "./AchievementsDialog";
+import { ACHIEVEMENTS } from "@/lib/game/achievements";
 import { toast } from "sonner";
 
 function StatusPanel({
@@ -45,11 +47,13 @@ function StatusPanel({
   totalAchievements,
   graveyardCount,
   onOpenGraveyard,
+  onOpenAchievements,
 }: {
   achievementCount: number;
   totalAchievements: number;
   graveyardCount: number;
   onOpenGraveyard: () => void;
+  onOpenAchievements: () => void;
 }) {
   return (
     <div className="flex h-full flex-col gap-3 border-4 border-lcd-light bg-lcd-dark p-4 shadow-[6px_6px_0_0] shadow-lcd-dim">
@@ -57,7 +61,11 @@ function StatusPanel({
         STATUS
       </p>
       <div className="space-y-3">
-        <div className="flex items-center justify-between border-2 border-lcd-light/40 bg-lcd-dim/40 p-3">
+        <button
+          type="button"
+          onClick={onOpenAchievements}
+          className="flex w-full items-center justify-between border-2 border-lcd-light/40 bg-lcd-dim/40 p-3 transition-colors hover:border-accent-cyan"
+        >
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-accent-cyan" />
             <span className="text-[9px] uppercase tracking-widest text-lcd-light">
@@ -67,7 +75,7 @@ function StatusPanel({
           <span className="text-sm text-accent-cyan">
             {achievementCount}/{totalAchievements}
           </span>
-        </div>
+        </button>
         <button
           type="button"
           onClick={onOpenGraveyard}
@@ -94,7 +102,7 @@ function StatusPanel({
   );
 }
 
-const TOTAL_ACHIEVEMENTS = 8;
+const TOTAL_ACHIEVEMENTS = ACHIEVEMENTS.length;
 
 export function Game() {
   const tama = useTamagotchi();
@@ -110,6 +118,7 @@ export function Game() {
   const [miniOpen, setMiniOpen] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
   const [graveyardOpen, setGraveyardOpen] = useState(false);
+  const [achievementsOpen, setAchievementsOpen] = useState(false);
 
   const actionItems = useMemo<ActionItem[]>(() => {
     if (!pet) return [];
@@ -326,6 +335,7 @@ export function Game() {
               totalAchievements={TOTAL_ACHIEVEMENTS}
               graveyardCount={graveyard.length}
               onOpenGraveyard={() => setGraveyardOpen(true)}
+              onOpenAchievements={() => setAchievementsOpen(true)}
             />
           </aside>
         )}
@@ -401,6 +411,12 @@ export function Game() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AchievementsDialog
+        open={achievementsOpen}
+        onOpenChange={setAchievementsOpen}
+        unlocked={achievements}
+      />
 
       <Dialog open={graveyardOpen} onOpenChange={setGraveyardOpen}>
         <DialogContent className="rounded-none border-4 border-lcd-light bg-lcd-dark font-pixel text-lcd-light sm:max-w-md">
