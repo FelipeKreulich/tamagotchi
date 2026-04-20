@@ -39,11 +39,13 @@ export function DpadButtons({
           key={i}
           type="button"
           onClick={btn.onClick}
-          className="group flex flex-col items-center gap-2 text-[10px] uppercase tracking-widest text-lcd-light"
+          className="group flex flex-col items-center gap-2 text-[10px] uppercase tracking-widest text-lcd-light transition-colors hover:text-accent-pink"
         >
-          <span className="relative flex h-16 w-16 items-center justify-center rounded-full border-[3px] border-lcd-light bg-[radial-gradient(circle_at_30%_25%,#ffc1dc,#ff4fa3_55%,#a62368)] text-base font-bold text-lcd-dark shadow-[6px_6px_0_0] shadow-lcd-dim transition-[transform,box-shadow] duration-75 group-hover:shadow-[4px_4px_0_0] group-active:translate-x-[4px] group-active:translate-y-[4px] group-active:shadow-[0_0_0_0] sm:h-20 sm:w-20">
-            <span className="absolute inset-1 rounded-full border border-accent-pink/50" />
-            {btn.letter}
+          <span className="relative flex h-16 w-16 items-center justify-center rounded-full border-[3px] border-lcd-light bg-[radial-gradient(circle_at_30%_25%,#ffc1dc,#ff4fa3_55%,#a62368)] text-base font-bold text-lcd-dark shadow-[6px_6px_0_0] shadow-lcd-dim transition-[transform,box-shadow,filter] duration-100 group-hover:-translate-y-[3px] group-hover:border-accent-cyan group-hover:shadow-[6px_9px_0_0] group-hover:brightness-110 group-active:translate-x-[4px] group-active:translate-y-[4px] group-active:shadow-[0_0_0_0] group-active:brightness-95 sm:h-20 sm:w-20">
+            <span className="absolute inset-1 rounded-full border border-accent-pink/50 transition-colors group-hover:border-white/60" />
+            <span className="relative z-[1] transition-transform duration-100 group-hover:scale-110 group-active:scale-95">
+              {btn.letter}
+            </span>
           </span>
           <span>{btn.label}</span>
         </button>
