@@ -179,6 +179,13 @@ export interface Dictionary {
     stageLabel: string;
     moodLabel: string;
     statsTitle: string;
+    stats: {
+      hunger: string;
+      happiness: string;
+      energy: string;
+      hygiene: string;
+      health: string;
+    };
     minuteShort: string;
     hourShort: string;
     footer: string;

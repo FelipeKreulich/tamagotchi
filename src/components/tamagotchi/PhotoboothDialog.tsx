@@ -41,13 +41,7 @@ function buildLabels(
     stageLabel: dict.photobooth.stageLabel,
     moodLabel: dict.photobooth.moodLabel,
     statsTitle: dict.photobooth.statsTitle,
-    stats: {
-      hunger: dict.stats.hunger,
-      happiness: dict.stats.happiness,
-      energy: dict.stats.energy,
-      hygiene: dict.stats.hygiene,
-      health: dict.stats.health,
-    },
+    stats: dict.photobooth.stats,
     stages: dict.stages,
     moods: {
       happy: dict.moodStatus.happy,

@@ -320,31 +320,6 @@ function paintStatBar(
   }
 }
 
-function drawWrappedText(
-  ctx: CanvasRenderingContext2D,
-  text: string,
-  x: number,
-  y: number,
-  maxWidth: number,
-  lineHeight: number
-): number {
-  const words = text.split(/\s+/);
-  let line = "";
-  let cy = y;
-  for (const word of words) {
-    const candidate = line ? `${line} ${word}` : word;
-    if (ctx.measureText(candidate).width > maxWidth && line) {
-      ctx.fillText(line, x, cy);
-      cy += lineHeight;
-      line = word;
-    } else {
-      line = candidate;
-    }
-  }
-  if (line) ctx.fillText(line, x, cy);
-  return cy + lineHeight;
-}
-
 export function renderPhotobooth(
   canvas: HTMLCanvasElement,
   opts: PhotoboothOptions
@@ -410,7 +385,7 @@ export function renderPhotobooth(
   const caseX = pad;
   const caseY = 200;
   const caseW = PHOTOBOOTH_WIDTH - pad * 2;
-  const caseH = 980;
+  const caseH = 860;
   paintCaseFrame(ctx, caseStyle, caseX, caseY, caseW, caseH, root);
 
   const bezel = 48;
@@ -508,7 +483,7 @@ export function renderPhotobooth(
   );
 
   // ---------- Stats block ----------
-  const statsTop = afterCaseY + 120;
+  const statsTop = afterCaseY + 110;
   ctx.fillStyle = lcdLight;
   ctx.globalAlpha = 0.55;
   ctx.font = `22px ${FONT}`;
@@ -518,18 +493,19 @@ export function renderPhotobooth(
 
   const bars: Array<[string, number, string]> = [
     [labels.stats.happiness, pet.stats.happiness, accentPink],
-    [labels.stats.hunger, 100 - pet.stats.hunger, lcdLight],
+    [labels.stats.hunger, pet.stats.hunger, lcdLight],
     [labels.stats.energy, pet.stats.energy, accentCyan],
     [labels.stats.hygiene, pet.stats.hygiene, lcdLight],
     [labels.stats.health, pet.stats.health, accentPink],
   ];
   const barsW = PHOTOBOOTH_WIDTH - pad * 2;
-  const rowH = 72;
+  const rowH = 64;
+  const firstBarY = statsTop + 42;
   bars.forEach(([label, value, color], i) => {
     paintStatBar(
       ctx,
       pad,
-      statsTop + 42 + i * rowH,
+      firstBarY + i * rowH,
       barsW,
       label,
       value,
@@ -538,46 +514,52 @@ export function renderPhotobooth(
       lcdLight
     );
   });
+  const statsEndY = firstBarY + (bars.length - 1) * rowH + 40;
 
-  // ---------- Age line ----------
-  const ageY = statsTop + 42 + bars.length * rowH + 40;
+  // ---------- Age + Footer (centered block) ----------
+  const ageY = statsEndY + 82;
+  // small divider above the age block
   ctx.fillStyle = lcdLight;
-  ctx.font = `28px ${FONT}`;
-  ctx.textAlign = "left";
-  ctx.fillText(labels.ageLabel, pad, ageY);
+  ctx.globalAlpha = 0.25;
+  ctx.fillRect(
+    PHOTOBOOTH_WIDTH / 2 - 120,
+    ageY - 54,
+    240,
+    2
+  );
+  ctx.globalAlpha = 1;
+
+  ctx.textAlign = "center";
+  ctx.textBaseline = "alphabetic";
+  ctx.fillStyle = lcdLight;
+  ctx.globalAlpha = 0.6;
+  ctx.font = `20px ${FONT}`;
+  ctx.fillText(labels.ageLabel, PHOTOBOOTH_WIDTH / 2, ageY - 16);
+  ctx.globalAlpha = 1;
+
   ctx.fillStyle = accentCyan;
-  ctx.font = `32px ${FONT}`;
-  ctx.textAlign = "right";
+  ctx.font = `42px ${FONT}`;
   ctx.fillText(
     formatAge(pet.ageMinutes, labels.minuteShort, labels.hourShort),
-    PHOTOBOOTH_WIDTH - pad,
-    ageY
+    PHOTOBOOTH_WIDTH / 2,
+    ageY + 32
   );
 
-  // ---------- Footer ----------
-  const footerY = PHOTOBOOTH_HEIGHT - 100;
+  // ---------- Footer (centered, two lines) ----------
+  const footerY = PHOTOBOOTH_HEIGHT - 90;
   ctx.fillStyle = lcdLight;
   ctx.globalAlpha = 0.35;
   ctx.fillRect(pad, footerY - 40, PHOTOBOOTH_WIDTH - pad * 2, 2);
   ctx.globalAlpha = 1;
 
-  ctx.fillStyle = accentPink;
-  ctx.fillRect(pad, footerY - 16, 16, 16);
+  ctx.textAlign = "center";
   ctx.fillStyle = lcdLight;
-  ctx.font = `22px ${FONT}`;
-  ctx.textAlign = "left";
-  ctx.textBaseline = "alphabetic";
-  ctx.fillText(labels.tagline, pad + 32, footerY);
+  ctx.font = `24px ${FONT}`;
+  ctx.fillText(labels.tagline, PHOTOBOOTH_WIDTH / 2, footerY - 8);
 
-  ctx.textAlign = "right";
-  ctx.globalAlpha = 0.6;
-  drawWrappedText(
-    ctx,
-    labels.footer,
-    PHOTOBOOTH_WIDTH - pad,
-    footerY,
-    PHOTOBOOTH_WIDTH * 0.5,
-    28
-  );
+  ctx.fillStyle = lcdLight;
+  ctx.globalAlpha = 0.55;
+  ctx.font = `18px ${FONT}`;
+  ctx.fillText(labels.footer, PHOTOBOOTH_WIDTH / 2, footerY + 28);
   ctx.globalAlpha = 1;
 }

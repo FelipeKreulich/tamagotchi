@@ -183,6 +183,13 @@ const dict: Dictionary = {
     stageLabel: "FASE",
     moodLabel: "HUMOR",
     statsTitle: "STATS",
+    stats: {
+      hunger: "FOME",
+      happiness: "FELICIDADE",
+      energy: "ENERGIA",
+      hygiene: "HIGIENE",
+      health: "SAUDE",
+    },
     minuteShort: "MIN",
     hourShort: "H",
     footer: "tama-gotchi",
