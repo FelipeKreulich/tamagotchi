@@ -50,7 +50,10 @@ export function SceneryLayer({ timeOfDay }: SceneryLayerProps) {
               left: `${s.left}%`,
               fontSize: `${s.size}px`,
               opacity: 0.85,
-              animation: `lcdflicker ${s.duration}s steps(2) infinite`,
+              animationName: "lcdflicker",
+              animationDuration: `${s.duration}s`,
+              animationTimingFunction: "steps(2)",
+              animationIterationCount: "infinite",
               animationDelay: `${s.delay}s`,
             }}
           >
@@ -85,9 +88,12 @@ export function SceneryLayer({ timeOfDay }: SceneryLayerProps) {
           style={{
             top: `${f.top}%`,
             right: `${f.right}%`,
-            animation: `lcdflicker 1.6s steps(2) infinite`,
-            animationDelay: `${f.delay}s`,
             opacity: 0.75,
+            animationName: "lcdflicker",
+            animationDuration: "1.6s",
+            animationTimingFunction: "steps(2)",
+            animationIterationCount: "infinite",
+            animationDelay: `${f.delay}s`,
           }}
         >
           +
