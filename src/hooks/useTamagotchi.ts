@@ -54,6 +54,15 @@ import {
   MAX_FAVORITES,
   checkAchievements,
 } from "@/lib/game/achievements";
+import {
+  POTIONS_BY_ID,
+  activeGrowth,
+  activeLuck,
+  activeShield,
+  consumeLuckUse,
+  pruneExpired,
+  type ActiveBuff,
+} from "@/lib/game/potions";
 import { runDaycare } from "@/lib/game/daycare";
 import type { Cosmetics, DaycareRules } from "@/lib/storage/schema";
 import {
@@ -69,6 +78,7 @@ export interface TamagotchiApi {
   favorites: string[];
   settings: SaveState["settings"];
   cosmetics: Cosmetics;
+  activeBuffs: ActiveBuff[];
   coins: number;
   isAlive: boolean;
   actions: {
@@ -94,6 +104,8 @@ export interface TamagotchiApi {
     equipAccessory: (id: string) => void;
     unequipSlot: (slot: AccessorySlot) => void;
     toggleFavorite: (id: string) => { success: boolean; error?: string };
+    usePotion: (id: string) => { success: boolean; error?: string };
+    consumeLuck: () => void;
     exportSave: () => string;
     importSave: (raw: string) => { success: boolean; error?: string };
   };
@@ -145,7 +157,19 @@ export function useTamagotchi(): TamagotchiApi {
         if (!prev.pet || !prev.pet.isAlive) return prev;
         const prevStage = prev.pet.stage;
         const now = Date.now();
-        const { pet, events } = tickPet(prev.pet, now);
+        const buffs = pruneExpired(prev.activeBuffs, now);
+        const shielded = activeShield(buffs, now);
+        const growth = activeGrowth(buffs, now);
+
+        // Growth: push bornAt backwards so the pet ages faster.
+        let petIn = prev.pet;
+        if (growth) {
+          const deltaSec = Math.max(0, (now - prev.pet.lastTickAt) / 1000);
+          const bonusMs = (growth.multiplier - 1) * deltaSec * 1000;
+          petIn = { ...prev.pet, bornAt: prev.pet.bornAt - bonusMs };
+        }
+
+        const { pet, events } = tickPet(petIn, now, { shield: shielded });
 
         // Sound effects for events
         const muted = prev.settings.muted;
@@ -173,7 +197,11 @@ export function useTamagotchi(): TamagotchiApi {
           runnablePet = result.pet;
         }
 
-        let next: SaveState = { ...prev, pet: runnablePet };
+        let next: SaveState = {
+          ...prev,
+          pet: runnablePet,
+          activeBuffs: buffs,
+        };
 
         // Graveyard entry on death
         if (events.died && pet.diedAt) {
@@ -410,6 +438,96 @@ export function useTamagotchi(): TamagotchiApi {
           return next;
         });
       },
+      usePotion: (id) => {
+        const potion = POTIONS_BY_ID.get(id);
+        if (!potion) return { success: false, error: "unknown potion" };
+        let result: { success: boolean; error?: string } = { success: false };
+        setState((prev) => {
+          if (!prev.pet || !prev.pet.isAlive) {
+            result = { success: false, error: "no pet" };
+            return prev;
+          }
+          if (prev.coins < potion.price) {
+            sfxDenied({ muted: prev.settings.muted });
+            result = { success: false, error: "not enough coins" };
+            return prev;
+          }
+          const now = Date.now();
+          let nextPet = prev.pet;
+          let nextBuffs = prev.activeBuffs;
+
+          switch (potion.effect.kind) {
+            case "restore_all":
+              nextPet = {
+                ...nextPet,
+                stats: {
+                  hunger: 100,
+                  happiness: 100,
+                  energy: 100,
+                  hygiene: 100,
+                  health: 100,
+                },
+                isSick: false,
+                poopCount: 0,
+              };
+              break;
+            case "shield":
+              nextBuffs = [
+                ...nextBuffs.filter((b) => b.kind !== "shield"),
+                {
+                  kind: "shield",
+                  startedAt: now,
+                  expiresAt: now + potion.effect.durationMs,
+                },
+              ];
+              break;
+            case "growth":
+              nextBuffs = [
+                ...nextBuffs.filter((b) => b.kind !== "growth"),
+                {
+                  kind: "growth",
+                  startedAt: now,
+                  expiresAt: now + potion.effect.durationMs,
+                  multiplier: potion.effect.multiplier,
+                },
+              ];
+              break;
+            case "luck":
+              nextBuffs = [
+                ...nextBuffs.filter((b) => b.kind !== "luck"),
+                {
+                  kind: "luck",
+                  startedAt: now,
+                  usesLeft: potion.effect.uses,
+                  multiplier: potion.effect.multiplier,
+                },
+              ];
+              break;
+          }
+
+          const next: SaveState = {
+            ...prev,
+            pet: nextPet,
+            activeBuffs: nextBuffs,
+            coins: prev.coins - potion.price,
+          };
+          sfxPurchase({ muted: prev.settings.muted });
+          persist(next);
+          result = { success: true };
+          return next;
+        });
+        return result;
+      },
+      consumeLuck: () => {
+        setState((prev) => {
+          const next: SaveState = {
+            ...prev,
+            activeBuffs: consumeLuckUse(prev.activeBuffs),
+          };
+          persist(next);
+          return next;
+        });
+      },
       toggleFavorite: (id) => {
         let result: { success: boolean; error?: string } = { success: false };
         setState((prev) => {
@@ -483,8 +601,11 @@ export function useTamagotchi(): TamagotchiApi {
     favorites: state.favorites,
     settings: state.settings,
     cosmetics: state.cosmetics,
+    activeBuffs: state.activeBuffs,
     coins: state.coins,
     isAlive: !!state.pet?.isAlive,
     actions,
   };
 }
+
+export { activeLuck, activeShield, activeGrowth, consumeLuckUse };

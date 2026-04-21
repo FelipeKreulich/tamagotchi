@@ -173,6 +173,14 @@ export interface Dictionary {
     slotGlasses: string;
     slotRibbon: string;
     slotButtons: string;
+    slotPotions: string;
+    potions: Record<
+      "potionElixir" | "potionShield" | "potionGrowth" | "potionLuck",
+      { name: string; desc: string }
+    >;
+    use: string;
+    used: string;
+    needPet: string;
     buy: string;
     own: string;
     equip: string;

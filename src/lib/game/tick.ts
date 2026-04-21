@@ -32,7 +32,15 @@ const emptyEvents = (): TickEvents => ({
   woke: false,
 });
 
-export function tickPet(pet: Pet, now = Date.now()): {
+export interface TickOptions {
+  shield?: boolean;
+}
+
+export function tickPet(
+  pet: Pet,
+  now = Date.now(),
+  options: TickOptions = {}
+): {
   pet: Pet;
   events: TickEvents;
 } {
@@ -46,15 +54,18 @@ export function tickPet(pet: Pet, now = Date.now()): {
     };
 
   const events = emptyEvents();
+  const shield = options.shield ?? false;
+  const decayMul = shield ? 0 : 1;
 
-  // Base decay
-  let hungerDelta = -DECAY_PER_SECOND.hunger * deltaSec;
-  let happinessDelta = -DECAY_PER_SECOND.happiness * deltaSec;
-  let energyDelta = -DECAY_PER_SECOND.energy * deltaSec;
+  // Base decay (shield halts it entirely)
+  let hungerDelta = -DECAY_PER_SECOND.hunger * deltaSec * decayMul;
+  let happinessDelta = -DECAY_PER_SECOND.happiness * deltaSec * decayMul;
+  let energyDelta = -DECAY_PER_SECOND.energy * deltaSec * decayMul;
   let hygieneDelta =
     -(DECAY_PER_SECOND.hygiene +
       pet.poopCount * POOP_HYGIENE_MULTIPLIER) *
-    deltaSec;
+    deltaSec *
+    decayMul;
 
   // Sleeping modifier: regen energy, halt hunger/happiness/hygiene decay
   let isSleeping = pet.isSleeping;
@@ -67,7 +78,7 @@ export function tickPet(pet: Pet, now = Date.now()): {
 
   // Health dynamics
   let healthDelta = 0;
-  if (pet.isSick) {
+  if (pet.isSick && !shield) {
     healthDelta -= SICK_HEALTH_DECAY * deltaSec;
   }
   const nextStats = addStats(pet.stats, {
@@ -77,7 +88,7 @@ export function tickPet(pet: Pet, now = Date.now()): {
     hygiene: hygieneDelta,
   });
   const crit = criticalCount(nextStats);
-  if (crit > 0) {
+  if (crit > 0 && !shield) {
     healthDelta -= CRITICAL_STAT_HEALTH_DECAY * deltaSec * crit;
   } else if (
     pet.stats.health > 0 &&

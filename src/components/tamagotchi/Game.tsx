@@ -52,6 +52,9 @@ import { ParticleBurst, type ParticleKind } from "./Particles";
 import { RenameDialog } from "./RenameDialog";
 import { WeatherLayer } from "./WeatherLayer";
 import { SceneryLayer } from "./SceneryLayer";
+import { AuraLayer } from "./AuraLayer";
+import { BuffBadges } from "./BuffBadges";
+import { activeLuck } from "@/lib/game/potions";
 import { useWeather } from "@/hooks/useWeather";
 import { HelpButton } from "./HelpButton";
 import { HelpDialog } from "./HelpDialog";
@@ -220,6 +223,7 @@ export function Game() {
     graveyard,
     coins,
     cosmetics,
+    activeBuffs,
   } = tama;
   const dict = useT();
   const { locale, setLocale } = useLocale();
@@ -539,6 +543,8 @@ export function Game() {
             <div className="relative flex min-h-[260px] flex-col items-center justify-center gap-5 sm:min-h-[320px]">
               <SceneryLayer timeOfDay={timeOfDay} />
               <WeatherLayer weather={weather} />
+              <AuraLayer buffs={activeBuffs} />
+              <BuffBadges buffs={activeBuffs} />
               <ParticleBurst trigger={particle.key} kind={particle.kind} />
               {onStartScreen ? (
                 <StartScreen
@@ -641,15 +647,23 @@ export function Game() {
           onFinishGuess={(won) => {
             actions.playMinigame(won);
             if (won) {
-              actions.addCoins(5);
+              const luck = activeLuck(activeBuffs);
+              const mul = luck?.multiplier ?? 1;
+              actions.addCoins(5 * mul);
+              if (luck) actions.consumeLuck();
               triggerParticle("stars");
             }
             toast(won ? dict.toasts.minigameWon : dict.toasts.minigameLost);
           }}
           onFinishGeneric={(result) => {
             if (result.happiness > 0) actions.awardHappiness(result.happiness);
-            if (result.coins > 0) actions.addCoins(result.coins);
             const earned = result.won || result.coins > 0;
+            if (result.coins > 0) {
+              const luck = activeLuck(activeBuffs);
+              const mul = luck?.multiplier ?? 1;
+              actions.addCoins(result.coins * mul);
+              if (luck) actions.consumeLuck();
+            }
             if (earned) triggerParticle("stars");
             toast(
               earned ? dict.toasts.minigameWon : dict.toasts.minigameLost
@@ -732,6 +746,7 @@ export function Game() {
         }}
         onEquip={actions.equipAccessory}
         onUnequip={actions.unequipSlot}
+        onUsePotion={actions.usePotion}
       />
 
       {evolvedStage && <EvolutionFlash stage={evolvedStage} />}

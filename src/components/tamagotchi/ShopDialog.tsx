@@ -19,6 +19,8 @@ import {
   type AccessorySlot,
 } from "./accessories/catalog";
 import { AccessorySprite } from "./accessories/AccessorySprite";
+import { POTIONS, type Potion } from "@/lib/game/potions";
+import { toast } from "sonner";
 
 interface ShopDialogProps {
   open: boolean;
@@ -28,6 +30,7 @@ interface ShopDialogProps {
   onBuy: (id: string) => { success: boolean; error?: string };
   onEquip: (id: string) => void;
   onUnequip: (slot: AccessorySlot) => void;
+  onUsePotion: (id: string) => { success: boolean; error?: string };
 }
 
 export function ShopDialog({
@@ -38,6 +41,7 @@ export function ShopDialog({
   onBuy,
   onEquip,
   onUnequip,
+  onUsePotion,
 }: ShopDialogProps) {
   const dict = useT();
 
@@ -78,6 +82,33 @@ export function ShopDialog({
         </div>
 
         <div className="max-h-[60vh] space-y-4 overflow-y-auto pr-1">
+          <section className="space-y-2">
+            <h3 className="text-[10px] uppercase tracking-widest text-accent-cyan">
+              {dict.shop.slotPotions}
+            </h3>
+            <div className="grid grid-cols-2 gap-2">
+              {POTIONS.map((potion) => (
+                <PotionCard
+                  key={potion.id}
+                  potion={potion}
+                  coins={coins}
+                  onUse={() => {
+                    const r = onUsePotion(potion.id);
+                    if (r.success) toast(dict.shop.used);
+                    else if (r.error === "no pet")
+                      toast.error(dict.shop.needPet);
+                  }}
+                  labels={{
+                    use: dict.shop.use,
+                    insufficient: dict.shop.insufficient,
+                    name: dict.shop.potions[potion.nameKey].name,
+                    desc: dict.shop.potions[potion.nameKey].desc,
+                  }}
+                />
+              ))}
+            </div>
+          </section>
+
           {grouped.map(({ slot, items }) => (
             <section key={slot} className="space-y-2">
               <h3 className="text-[10px] uppercase tracking-widest text-accent-cyan">
@@ -110,6 +141,53 @@ export function ShopDialog({
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+interface PotionCardProps {
+  potion: Potion;
+  coins: number;
+  onUse: () => void;
+  labels: {
+    use: string;
+    insufficient: string;
+    name: string;
+    desc: string;
+  };
+}
+
+function PotionCard({ potion, coins, onUse, labels }: PotionCardProps) {
+  const canAfford = coins >= potion.price;
+  return (
+    <div className="flex flex-col gap-2 border-2 border-lcd-light/40 bg-lcd-dim/30 p-3">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <p className="text-[9px] uppercase tracking-widest text-accent-pink">
+            {labels.name}
+          </p>
+          <p className="mt-1 text-[7px] leading-relaxed text-lcd-light/80">
+            {labels.desc}
+          </p>
+        </div>
+        <div className="flex shrink-0 items-center gap-1 text-[8px] uppercase tracking-widest text-accent-pink">
+          <Coins className="h-3 w-3" />
+          {potion.price}
+        </div>
+      </div>
+      <button
+        type="button"
+        onClick={onUse}
+        disabled={!canAfford}
+        className={cn(
+          "w-full border-2 py-1 text-[8px] uppercase tracking-widest transition-colors",
+          canAfford
+            ? "border-accent-cyan text-accent-cyan hover:bg-accent-cyan/10"
+            : "cursor-not-allowed border-lcd-light/30 text-lcd-light/40"
+        )}
+      >
+        {canAfford ? labels.use : labels.insufficient}
+      </button>
+    </div>
   );
 }
 

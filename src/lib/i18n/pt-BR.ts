@@ -177,6 +177,28 @@ const dict: Dictionary = {
     slotGlasses: "OCULOS",
     slotRibbon: "FITAS",
     slotButtons: "BOTOES",
+    slotPotions: "POCOES",
+    use: "USAR",
+    used: "✨ Poção usada!",
+    needPet: "Precisa ter um bichinho vivo.",
+    potions: {
+      potionElixir: {
+        name: "🧪 ELIXIR",
+        desc: "Restaura todos os stats, cura doença e limpa sujeira.",
+      },
+      potionShield: {
+        name: "🛡 ESCUDO",
+        desc: "Stats congelados por 2h. Aura dourada.",
+      },
+      potionGrowth: {
+        name: "⚡ VELOZ",
+        desc: "Envelhece 3x mais rápido por 30min.",
+      },
+      potionLuck: {
+        name: "🍀 SORTE",
+        desc: "Próximos 3 minigames ganhos = 2x moedas.",
+      },
+    },
     buy: "COMPRAR",
     own: "TEM",
     equip: "USAR",

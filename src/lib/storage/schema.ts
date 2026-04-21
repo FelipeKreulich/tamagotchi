@@ -1,4 +1,5 @@
 import type { Achievement, GraveyardEntry, Pet } from "@/lib/game/types";
+import type { ActiveBuff } from "@/lib/game/potions";
 
 export const STORAGE_VERSION = 1 as const;
 
@@ -30,6 +31,7 @@ export interface SaveStateV1 {
   achievements: Achievement[];
   favorites: string[];
   coins: number;
+  activeBuffs: ActiveBuff[];
   cosmetics: Cosmetics;
   settings: {
     muted: boolean;
@@ -63,6 +65,7 @@ export const INITIAL_SAVE_STATE: SaveState = {
   achievements: [],
   favorites: [],
   coins: 0,
+  activeBuffs: [],
   cosmetics: {
     owned: [],
     equipped: { hat: null, glasses: null, ribbon: null, buttons: null },

@@ -54,6 +54,12 @@ export function migrate(raw: unknown): SaveState {
             (v) => typeof v === "string"
           )
         : [],
+      activeBuffs: Array.isArray(
+        (raw as { activeBuffs?: unknown }).activeBuffs
+      )
+        ? ((raw as { activeBuffs: SaveState["activeBuffs"] })
+            .activeBuffs as SaveState["activeBuffs"])
+        : [],
       pet: normalizePet(raw.pet),
       cosmetics: {
         owned: Array.isArray(rawCosmetics?.owned) ? rawCosmetics.owned : [],
