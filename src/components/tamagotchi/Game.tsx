@@ -44,8 +44,11 @@ import { LcdScreen } from "./LcdScreen";
 import { DpadButtons } from "./DpadButtons";
 import {
   DEFAULT_BUTTON_STYLE,
+  DEFAULT_CASE_STYLE,
   buttonSkinById,
+  caseSkinById,
 } from "./accessories/catalog";
+import { usePaletteOverride } from "@/hooks/usePaletteOverride";
 import { AchievementsDialog } from "./AchievementsDialog";
 import { AchievementShowcase } from "./AchievementShowcase";
 import { ParticleBurst, type ParticleKind } from "./Particles";
@@ -229,6 +232,7 @@ export function Game() {
   const { locale, setLocale } = useLocale();
   const timeOfDay = useTimeOfDay();
   const weather = useWeather();
+  usePaletteOverride(tama.cosmetics.equipped.palette);
 
   const onStartScreen = !pet;
   const showIntroMusic = !hydrated || onStartScreen || (pet && !pet.isAlive);
@@ -539,7 +543,12 @@ export function Game() {
         )}
 
         <section className="order-1 flex flex-col items-center justify-center gap-6 lg:order-2 lg:col-start-2">
-          <LcdScreen className="max-w-2xl">
+          <LcdScreen
+            className="max-w-2xl"
+            caseStyle={
+              caseSkinById(cosmetics.equipped.case)?.style ?? DEFAULT_CASE_STYLE
+            }
+          >
             <div className="relative flex min-h-[260px] flex-col items-center justify-center gap-5 sm:min-h-[320px]">
               <SceneryLayer timeOfDay={timeOfDay} />
               <WeatherLayer weather={weather} />

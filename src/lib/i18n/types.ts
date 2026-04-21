@@ -174,6 +174,8 @@ export interface Dictionary {
     slotRibbon: string;
     slotButtons: string;
     slotPotions: string;
+    slotPalette: string;
+    slotCase: string;
     potions: Record<
       "potionElixir" | "potionShield" | "potionGrowth" | "potionLuck",
       { name: string; desc: string }
@@ -200,7 +202,15 @@ export interface Dictionary {
       | "btnCyan"
       | "btnGold"
       | "btnRetro"
-      | "btnDark",
+      | "btnDark"
+      | "palVirtualBoy"
+      | "palAmber"
+      | "palBlueberry"
+      | "palMidnight"
+      | "caseFlamingo"
+      | "caseChrome"
+      | "caseWood"
+      | "caseClear",
       string
     >;
   };

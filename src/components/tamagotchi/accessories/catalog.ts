@@ -1,7 +1,13 @@
 import type { Species } from "@/lib/game/types";
 import type { PixelGrid, SpritePalette } from "../Sprite";
 
-export type AccessorySlot = "hat" | "glasses" | "ribbon" | "buttons";
+export type AccessorySlot =
+  | "hat"
+  | "glasses"
+  | "ribbon"
+  | "buttons"
+  | "palette"
+  | "case";
 
 export interface AccessoryOffset {
   top: string;
@@ -48,14 +54,58 @@ export interface ButtonSkin extends AccessoryBase {
   style: ButtonSkinStyle;
 }
 
-export type Accessory = PetAccessory | ButtonSkin;
+export interface PaletteVars {
+  lcdBg: string;
+  lcdDark: string;
+  lcdDim: string;
+  lcdLight: string;
+  accentPink: string;
+  accentCyan: string;
+}
+
+export interface PaletteSkin extends AccessoryBase {
+  slot: "palette";
+  vars: PaletteVars;
+}
+
+export interface CaseStyle {
+  /** Background of the outer frame (usually a gradient). */
+  background: string;
+  /** Color of the 6px bezel border around the LCD. */
+  border: string;
+  /** Drop-shadow color for the 3D raised look. */
+  shadow: string;
+  /** Color of the inner bezel line that frames the LCD. */
+  innerBorder: string;
+  /** Color of the LED "ON" dot and LCD label text. */
+  ledText: string;
+}
+
+export interface CaseSkin extends AccessoryBase {
+  slot: "case";
+  style: CaseStyle;
+}
+
+export type Accessory =
+  | PetAccessory
+  | ButtonSkin
+  | PaletteSkin
+  | CaseSkin;
 
 export function isPetAccessory(a: Accessory): a is PetAccessory {
-  return a.slot !== "buttons";
+  return a.slot === "hat" || a.slot === "glasses" || a.slot === "ribbon";
 }
 
 export function isButtonSkin(a: Accessory): a is ButtonSkin {
   return a.slot === "buttons";
+}
+
+export function isPaletteSkin(a: Accessory): a is PaletteSkin {
+  return a.slot === "palette";
+}
+
+export function isCaseSkin(a: Accessory): a is CaseSkin {
+  return a.slot === "case";
 }
 
 export const DEFAULT_BUTTON_STYLE: ButtonSkinStyle = {
@@ -329,6 +379,150 @@ const BUTTON_SKINS: ButtonSkin[] = [
 
 ACCESSORIES.push(...BUTTON_SKINS);
 
+// ---------- LCD PALETTES ----------
+
+const PALETTE_SKINS: PaletteSkin[] = [
+  {
+    id: "pal_virtual_boy",
+    slot: "palette",
+    nameKey: "palVirtualBoy",
+    price: 120,
+    vars: {
+      lcdBg: "#1a0000",
+      lcdDark: "#070000",
+      lcdDim: "#2a0a0a",
+      lcdLight: "#ff2a2a",
+      accentPink: "#ff5577",
+      accentCyan: "#ff8888",
+    },
+  },
+  {
+    id: "pal_amber",
+    slot: "palette",
+    nameKey: "palAmber",
+    price: 100,
+    vars: {
+      lcdBg: "#1a0f00",
+      lcdDark: "#080400",
+      lcdDim: "#3a2400",
+      lcdLight: "#ffb040",
+      accentPink: "#ff7020",
+      accentCyan: "#ffd080",
+    },
+  },
+  {
+    id: "pal_blueberry",
+    slot: "palette",
+    nameKey: "palBlueberry",
+    price: 110,
+    vars: {
+      lcdBg: "#0a1a2e",
+      lcdDark: "#040a14",
+      lcdDim: "#162844",
+      lcdLight: "#a0d8ff",
+      accentPink: "#ff80c0",
+      accentCyan: "#80e0ff",
+    },
+  },
+  {
+    id: "pal_midnight",
+    slot: "palette",
+    nameKey: "palMidnight",
+    price: 130,
+    vars: {
+      lcdBg: "#1a0636",
+      lcdDark: "#0a0018",
+      lcdDim: "#2a0e50",
+      lcdLight: "#c080ff",
+      accentPink: "#ff66dd",
+      accentCyan: "#9a9aff",
+    },
+  },
+];
+
+ACCESSORIES.push(...PALETTE_SKINS);
+
+export const DEFAULT_PALETTE_VARS: PaletteVars = {
+  lcdBg: "#0b1b10",
+  lcdDark: "#0a0f0a",
+  lcdDim: "#1f3a24",
+  lcdLight: "#7cf074",
+  accentPink: "#ff4fa3",
+  accentCyan: "#4de1ff",
+};
+
+// ---------- CASE COLORS ----------
+
+const CASE_SKINS: CaseSkin[] = [
+  {
+    id: "case_flamingo",
+    slot: "case",
+    nameKey: "caseFlamingo",
+    price: 80,
+    style: {
+      background:
+        "linear-gradient(180deg,#ff8fbf 0%,#f25490 40%,#f25490 60%,#ff8fbf 100%)",
+      border: "#ffd5e5",
+      shadow: "#7a1445",
+      innerBorder: "#9a2a5a",
+      ledText: "#ffffff",
+    },
+  },
+  {
+    id: "case_chrome",
+    slot: "case",
+    nameKey: "caseChrome",
+    price: 100,
+    style: {
+      background:
+        "linear-gradient(180deg,#e4e8ee 0%,#7a8290 40%,#7a8290 60%,#e4e8ee 100%)",
+      border: "#cfd4dc",
+      shadow: "#2a3240",
+      innerBorder: "#434a58",
+      ledText: "#1a1f28",
+    },
+  },
+  {
+    id: "case_wood",
+    slot: "case",
+    nameKey: "caseWood",
+    price: 90,
+    style: {
+      background:
+        "linear-gradient(180deg,#b78b5c 0%,#6e461f 40%,#6e461f 60%,#b78b5c 100%)",
+      border: "#d9b38a",
+      shadow: "#2a180a",
+      innerBorder: "#3a240f",
+      ledText: "#ffe0b5",
+    },
+  },
+  {
+    id: "case_clear",
+    slot: "case",
+    nameKey: "caseClear",
+    price: 110,
+    style: {
+      background:
+        "linear-gradient(180deg,rgba(255,255,255,0.25) 0%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.25) 100%)",
+      border: "rgba(255,255,255,0.7)",
+      shadow: "rgba(120,120,150,0.4)",
+      innerBorder: "rgba(255,255,255,0.3)",
+      ledText: "#ffffff",
+    },
+  },
+];
+
+ACCESSORIES.push(...CASE_SKINS);
+
+export const DEFAULT_CASE_STYLE: CaseStyle = {
+  background:
+    "linear-gradient(180deg,#1b3424 0%,#0a120d 40%,#0a120d 60%,#1b3424 100%)",
+  border: "var(--lcd-light)",
+  shadow: "var(--lcd-dim)",
+  innerBorder: "var(--lcd-dim)",
+  ledText: "var(--lcd-light)",
+};
+
 export const ACCESSORIES_BY_ID = new Map(
   ACCESSORIES.map((a) => [a.id, a])
 );
@@ -343,9 +537,23 @@ export function buttonSkinById(id: string | null | undefined): ButtonSkin | null
   return a && isButtonSkin(a) ? a : null;
 }
 
+export function paletteSkinById(
+  id: string | null | undefined
+): PaletteSkin | null {
+  const a = accessoryById(id);
+  return a && isPaletteSkin(a) ? a : null;
+}
+
+export function caseSkinById(id: string | null | undefined): CaseSkin | null {
+  const a = accessoryById(id);
+  return a && isCaseSkin(a) ? a : null;
+}
+
 export const SLOT_ORDER: AccessorySlot[] = [
   "hat",
   "glasses",
   "ribbon",
   "buttons",
+  "palette",
+  "case",
 ];

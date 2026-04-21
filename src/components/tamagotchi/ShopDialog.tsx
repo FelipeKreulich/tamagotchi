@@ -15,6 +15,8 @@ import {
   ACCESSORIES,
   SLOT_ORDER,
   isButtonSkin,
+  isCaseSkin,
+  isPaletteSkin,
   type Accessory,
   type AccessorySlot,
 } from "./accessories/catalog";
@@ -50,6 +52,8 @@ export function ShopDialog({
     glasses: dict.shop.slotGlasses,
     ribbon: dict.shop.slotRibbon,
     buttons: dict.shop.slotButtons,
+    palette: dict.shop.slotPalette,
+    case: dict.shop.slotCase,
   };
 
   const grouped = SLOT_ORDER.map((slot) => ({
@@ -257,6 +261,36 @@ function ShopCard({
             }}
           >
             A
+          </span>
+        ) : isPaletteSkin(item) ? (
+          <div className="flex h-10 w-full items-center justify-center gap-[2px]">
+            {[
+              item.vars.lcdDark,
+              item.vars.lcdBg,
+              item.vars.lcdDim,
+              item.vars.lcdLight,
+              item.vars.accentPink,
+              item.vars.accentCyan,
+            ].map((c, i) => (
+              <span
+                key={i}
+                className="h-8 w-2 border border-lcd-dark"
+                style={{ backgroundColor: c }}
+              />
+            ))}
+          </div>
+        ) : isCaseSkin(item) ? (
+          <span
+            className="flex h-10 w-12 items-center justify-center border-[3px]"
+            style={{
+              background: item.style.background,
+              borderColor: item.style.border,
+            }}
+          >
+            <span
+              className="h-4 w-6 bg-lcd-bg"
+              style={{ border: `1px solid ${item.style.innerBorder}` }}
+            />
           </span>
         ) : (
           <AccessorySprite

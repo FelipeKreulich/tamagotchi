@@ -23,6 +23,11 @@ export function useTimeOfDay(): DayPart {
   useEffect(() => {
     if (typeof document === "undefined") return;
     const root = document.documentElement;
+    // Skip auto day/night when a custom palette is equipped.
+    if (root.dataset.paletteLocked) {
+      delete root.dataset.timeOfDay;
+      return;
+    }
     root.dataset.timeOfDay = part;
     return () => {
       delete root.dataset.timeOfDay;
